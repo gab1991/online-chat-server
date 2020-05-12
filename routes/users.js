@@ -2,11 +2,8 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const db = require('../db/index');
+const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
-const { promisify } = require('util');
-
-const query = promisify(db.query).bind(db);
 
 router.post('/sign_up', async (req, res) => {
   const { username, password, email } = req.body;
@@ -26,8 +23,11 @@ router.post('/sign_up', async (req, res) => {
     // Creating validation token
     const token = jwt.sign({ _id: username }, process.env.TOKEN_SECRET);
 
-    res.header({ 'Auth-token': token });
-    res.send({ success: `User ${username} has been created` });
+    res.header({
+      'Access-Control-Expose-Headers': 'Auth-token',
+      'Auth-token': token,
+    });
+    res.send({ success: `User ${username} has been created`, username });
   } catch (err) {
     let errMessage;
     if (err.code === 'ER_DUP_ENTRY') {
@@ -42,21 +42,37 @@ router.post('/sign_up', async (req, res) => {
   }
 });
 
-router.post('/sign_in', async (req, res) => {
+router.post('/login', async (req, res) => {
   const { username_email, password } = req.body;
-  console.log({ username_email, password });
 
-  //Password is correct
-  // const validPass = await bcrypt.compare(req.body.password, user.password);
-  // if (!validPass)
-  //   return res.status(400).send({
-  //     err_message: 'Username or password is not correct',
-  //     field: 'password',
-  //   });
-  // // Creating validation token
-  // const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-  // //res.header('access-control-allow-headers', 'auth-token');
-  // res.send({ success: 'Log In', username: req.body.username, token: token });
+  try {
+    const sql = queries.users.findUser(username_email);
+    const user = await query(sql);
+    if (!user.length) {
+      return res.status(400).send({
+        err_message: `User with username/email : ${username_email} is not found`,
+        field: `username_email`,
+      });
+    }
+    const username = user[0].username;
+    const hashedPass = user[0].hashed_pass;
+    //check password is correct
+    const validPass = await bcrypt.compare(password, hashedPass);
+    if (!validPass) {
+      return res.status(400).send({
+        err_message: 'Username or password is not correct',
+        field: 'password',
+      });
+    }
+    const token = jwt.sign({ _id: username }, process.env.TOKEN_SECRET);
+    res.header({
+      'Access-Control-Expose-Headers': 'Auth-token',
+      'Auth-token': token,
+    });
+    res.send({ success: 'Log In', username: username });
+  } catch (err) {
+    res.status(500).send(err);
+  }
 });
 
 module.exports = router;

@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mysql = require('mysql');
+const { promisify } = require('util');
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -13,4 +14,5 @@ db.connect((err) => {
   console.log(`DB CONNECTED`);
 });
 
-module.exports = db;
+const query = promisify(db.query).bind(db);
+module.exports = { db, query };

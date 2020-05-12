@@ -13,7 +13,9 @@ const queries = {
       )  ENGINE=INNODB;`;
     },
     findUser: (username) => {
-      return;
+      return `select * from users
+      where username = '${username}'
+      or email = '${username}';`;
     },
     createUser: (username, password, email) => {
       return `insert into users (username, hashed_pass, email) 
