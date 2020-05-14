@@ -29,16 +29,18 @@ router.post('/sign_up', async (req, res) => {
     });
     res.send({ success: `User ${username} has been created`, username });
   } catch (err) {
-    let errMessage;
+    const errObj = {};
     if (err.code === 'ER_DUP_ENTRY') {
       const sqlErrMessage = err.sqlMessage;
       if (sqlErrMessage.includes('username_UNIQUE')) {
-        errMessage = `This username : ${username} already exists`;
+        errObj.err_message = `This username : ${username} already exists`;
+        errObj.field = 'username';
       } else if (sqlErrMessage.includes('email_UNIQUE')) {
-        errMessage = `User with email ${email} already exists`;
+        errObj.err_message = `User with email ${email} already exists`;
+        errObj.field = 'email';
       }
     }
-    return res.status(400).send({ error: errMessage } || err);
+    return res.status(400).send(errObj || err);
   }
 });
 
