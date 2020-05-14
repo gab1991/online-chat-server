@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-
 const db = require('./db/index');
 const users = require('./db/db_users');
 const app = express();
@@ -9,6 +8,7 @@ const path = require('path');
 const http = require('http').createServer(app);
 const socketio = require('socket.io');
 const io = socketio(http);
+
 //allows server accepts jason
 app.use(express.json());
 
@@ -19,8 +19,12 @@ app.use(cors());
 //CREATING ROUTES
 const usersRouter = require('./routes/users.js');
 app.use('/api/users', usersRouter);
+
+const uploadRouter = require('./routes/img_upoad');
+app.use('/api/img_upload', uploadRouter);
 //static files
 app.use(express.static('build'));
+app.use(express.static(process.env.PUBLIC_FOLDER));
 
 // Basic html sending
 // app.get('*', (req, res) => {
