@@ -5,11 +5,10 @@ const queries = {
     createTable: () => {
       return `CREATE TABLE IF NOT EXISTS users (
         user_id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(255) NOT NULL,
+        username VARCHAR(255) NOT NULL UNIQUE,
         email VARCHAR(255) NOT NULL,
         hashed_pass VARCHAR(255) NOT NULL,
-        avatar_url VARCHAR(255),
-        status TINYINT NOT NULL,
+        status TINYINT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )  ENGINE=INNODB;`;
     },
@@ -22,8 +21,25 @@ const queries = {
       return `insert into users (username, hashed_pass, email) 
       VALUES ('${username}', '${password}', '${email}')`;
     },
+  },
+  profiles: {
+    createTable: () => {
+      return `CREATE TABLE IF NOT EXISTS profiles (
+        username VARCHAR(255) NOT NULL UNIQUE,
+        displayed_name VARCHAR(255),
+        avatar_url VARCHAR(255)
+      )  ENGINE=INNODB;`;
+    },
+    createProfile: (username) => {
+      return `insert into profiles (username) 
+      VALUES ('${username}')`;
+    },
+    getProfile: (username) => {
+      return `select * from  profiles 
+      WHERE username = '${username}'`;
+    },
     addAvatar: (username, relativeAvatarPath) => {
-      return `UPDATE users 
+      return `UPDATE profiles 
       SET  avatar_url = '${relativeAvatarPath}'
       WHERE username = '${username}'`;
     },

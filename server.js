@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const db = require('./db/index');
 const users = require('./db/db_users');
+const profiles = require('./db/db_profiles');
 const app = express();
 const cors = require('cors');
 const path = require('path');
@@ -19,6 +20,9 @@ app.use(cors());
 //CREATING ROUTES
 const usersRouter = require('./routes/users.js');
 app.use('/api/users', usersRouter);
+
+const profilesRouter = require('./routes/profiles.js');
+app.use('/api/profiles', profilesRouter);
 
 const uploadRouter = require('./routes/img_upoad');
 app.use('/api/img_upload', uploadRouter);

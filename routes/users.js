@@ -20,6 +20,10 @@ router.post('/sign_up', async (req, res) => {
     );
     await query(createUserSql);
 
+    //Create profile entry
+    const createProfileSql = queries.profiles.createProfile(username);
+    await query(createProfileSql);
+
     // Creating validation token
     const token = jwt.sign({ _id: username }, process.env.TOKEN_SECRET);
 
@@ -40,7 +44,7 @@ router.post('/sign_up', async (req, res) => {
         errObj.field = 'email';
       }
     }
-    return res.status(400).send(errObj || err);
+    return res.status(400).send(errObj.field ? errObj : err);
   }
 });
 
