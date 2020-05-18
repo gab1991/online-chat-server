@@ -47,26 +47,4 @@ router.post(
   }
 );
 
-async function getAvatar(req, res, next) {
-  const { username } = req.body;
-  const readdir = promisify(fs.readdir);
-  const host = req.get('host');
-  const avatarDir = path.resolve(__dirname, `../public/upload/avatars/`);
-  const avatars = await readdir(avatarDir);
-  let avatarImg = null;
-  for (let avatar of avatars) {
-    if (avatar.includes(`${username}`)) {
-      avatarImg = avatar;
-      break;
-    }
-  }
-
-  if (avatarImg) {
-    const filePath = `http://${host}/public/upload/avatars/${req.params.platform}`;
-    res.filePath = filePath;
-    next();
-  } else {
-  }
-}
-
 module.exports = router;

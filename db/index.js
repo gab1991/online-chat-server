@@ -1,5 +1,6 @@
 require('dotenv').config();
 const mysql = require('mysql');
+const initializeTables = require('./tables');
 const { promisify } = require('util');
 
 const db = mysql.createConnection({
@@ -12,6 +13,7 @@ const db = mysql.createConnection({
 db.connect((err) => {
   if (err) throw err;
   console.log(`DB CONNECTED`);
+  initializeTables(db);
 });
 
 const query = promisify(db.query).bind(db);

@@ -1,8 +1,6 @@
 require('dotenv').config();
 const express = require('express');
 const db = require('./db/index');
-const users = require('./db/db_users');
-const profiles = require('./db/db_profiles');
 const app = express();
 const cors = require('cors');
 const path = require('path');
@@ -38,7 +36,10 @@ app.use(express.static(process.env.PUBLIC_FOLDER));
 // Run socket on client connection
 io.on('connection', (socket) => {
   console.log('new ws connection');
+  socket.on('enterChat', (data) => {
+    console.log(data);
+  });
 });
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => console.log(`serv started on port ${PORT}`));
+http.listen(PORT, () => console.log(`serv started on port ${PORT}`));
