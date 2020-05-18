@@ -39,7 +39,7 @@ router.post(
       const filename = req.file.filename;
       const host = req.get('host');
       const filePath = `http://${host}/upload/avatars/${filename}`;
-      await query(queries.profiles.addAvatar(username, filename));
+      await query(queries.profile.addAvatar(username, filename));
       res.send({ avatar_path: filePath });
     } catch (err) {
       res.status(500).send({ err: err.message });

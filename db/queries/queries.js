@@ -1,9 +1,9 @@
 require('dotenv').config();
 
 const queries = {
-  users: {
+  user: {
     createTable: () => {
-      return `CREATE TABLE IF NOT EXISTS users (
+      return `CREATE TABLE IF NOT EXISTS user (
         user_id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NOT NULL UNIQUE,
         email VARCHAR(255) NOT NULL,
@@ -13,18 +13,18 @@ const queries = {
       )  ENGINE=INNODB;`;
     },
     findUser: (username) => {
-      return `select * from users
+      return `select * from user
       where username = '${username}'
       or email = '${username}';`;
     },
     createUser: (username, password, email) => {
-      return `insert into users (username, hashed_pass, email) 
+      return `insert into user (username, hashed_pass, email) 
       VALUES ('${username}', '${password}', '${email}')`;
     },
   },
-  profiles: {
+  profile: {
     createTable: () => {
-      return `CREATE TABLE IF NOT EXISTS profiles (
+      return `CREATE TABLE IF NOT EXISTS profile (
         id INT AUTO_INCREMENT PRIMARY KEY,
         username VARCHAR(255) NOT NULL UNIQUE,
         displayed_name VARCHAR(255),
@@ -32,60 +32,73 @@ const queries = {
       )  ENGINE=INNODB;`;
     },
     createProfile: (username) => {
-      return `insert into profiles (username) 
+      return `insert into profile (username) 
       VALUES ('${username}')`;
     },
     getProfile: (username) => {
-      return `select * from  profiles 
+      return `select * from  profile 
       WHERE username = '${username}'`;
     },
     addAvatar: (username, relativeAvatarPath) => {
-      return `UPDATE profiles 
+      return `UPDATE profile 
       SET  avatar_url = '${relativeAvatarPath}'
       WHERE username = '${username}'`;
     },
     findProfiles: (nameSearch) => {
-      return `SELECT * FROM profiles
+      return `SELECT * FROM profile
         where username like '${nameSearch}%'
         or displayed_name like '${nameSearch}%'`;
     },
   },
-  conversations: {
+  conversation: {
     createTable: () => {
-      return `CREATE TABLE IF NOT EXISTS conversations (
+      return `CREATE TABLE IF NOT EXISTS conversation (
         id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
         title VARCHAR(40),
-        profiles_id INT NOT NULL,
+        creator_id INT NOT NULL,
         channel_id VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         updated_at DATETIME,
-        FOREIGN KEY (profiles_id) REFERENCES profiles (id)
+        FOREIGN KEY (creator_id) REFERENCES profile (id)
         ) ENGINE=INNODB;`;
     },
+    createPrivateConversation: (user_id, contact_id) => {
+      return `Insert into conversation(title,creator_id,updated_at)
+      values ('Private_${user_id}+${contact_id}', '${user_id}', NOW() );
+      `;
+    },
   },
-  participants: {
+  participant: {
     createTable: () => {
-      return `CREATE TABLE IF NOT EXISTS participants (
+      return `CREATE TABLE IF NOT EXISTS participant (
         id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
         conversation_id INT NOT NULL,
-        profiles_id INT NOT NULL,
+        profile_id INT NOT NULL,
         type VARCHAR(255),
-        FOREIGN KEY (conversation_id) REFERENCES conversations (id),
-        FOREIGN KEY (profiles_id)  REFERENCES profiles (id)
+        FOREIGN KEY (conversation_id) REFERENCES conversation (id),
+        FOREIGN KEY (profile_id)  REFERENCES profile (id)
         ) ENGINE=INNODB;`;
     },
+    getPaticipants: (profile_id) => {
+      return `SELECT * FROM participant
+      where profile_id = '${profile_id}'`;
+    },
+    createParticipant: (conversation_id, user_id) => {
+      return `insert into participant(conversation_id,user_id)
+      values ('${conversation_id}', '${user_id}');`;
+    },
   },
-  messages: {
+  message: {
     createTable: () => {
-      return `CREATE TABLE IF NOT EXISTS messages (
+      return `CREATE TABLE IF NOT EXISTS message (
         id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
         conversation_id INT NOT NULL,
         sender_id INT NOT NULL,
-        participants_id INT not null,
+        participant_id INT not null,
         message VARCHAR(255),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (sender_id) REFERENCES profiles (id),
-        FOREIGN KEY (participants_id)  REFERENCES participants (id)
+        FOREIGN KEY (sender_id) REFERENCES profile (id),
+        FOREIGN KEY (participant_id)  REFERENCES participant (id)
         ) ENGINE=INNODB;`;
     },
   },

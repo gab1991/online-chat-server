@@ -5,8 +5,6 @@ const app = express();
 const cors = require('cors');
 const path = require('path');
 const http = require('http').createServer(app);
-const socketio = require('socket.io');
-const io = socketio(http);
 
 //allows server accepts jason
 app.use(express.json());
@@ -34,12 +32,7 @@ app.use(express.static(process.env.PUBLIC_FOLDER));
 // });
 
 // Run socket on client connection
-io.on('connection', (socket) => {
-  console.log('new ws connection');
-  socket.on('enterChat', (data) => {
-    console.log(data);
-  });
-});
+require('./socket/socket')(http);
 
 const PORT = process.env.PORT || 8000;
 http.listen(PORT, () => console.log(`serv started on port ${PORT}`));

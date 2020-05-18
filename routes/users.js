@@ -13,7 +13,7 @@ router.post('/sign_up', async (req, res) => {
     const hashPassword = await bcrypt.hash(password, salt);
 
     //Saving user to DB
-    const createUserSql = queries.users.createUser(
+    const createUserSql = queries.user.createUser(
       username,
       hashPassword,
       email
@@ -21,7 +21,7 @@ router.post('/sign_up', async (req, res) => {
     await query(createUserSql);
 
     //Create profile entry
-    const createProfileSql = queries.profiles.createProfile(username);
+    const createProfileSql = queries.profile.createProfile(username);
     await query(createProfileSql);
 
     // Creating validation token
@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
   const { username_email, password } = req.body;
 
   try {
-    const sql = queries.users.findUser(username_email);
+    const sql = queries.user.findUser(username_email);
     const user = await query(sql);
     if (!user.length) {
       return res.status(400).send({

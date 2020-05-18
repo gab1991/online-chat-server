@@ -10,7 +10,9 @@ const { generateAvatarPath } = require('../utils/utils.js');
 router.get('/', verifyToken, async (req, res) => {
   try {
     const username = req.verifiedUserData._id;
-    const sql = queries.profiles.getProfile(username);
+
+    const sql = queries.profile.getProfile(username);
+
     const resp = await query(sql);
     const profile = resp[0];
     profile['avatar_path'] = generateAvatarPath(req, profile['avatar_url']);
@@ -24,8 +26,10 @@ router.get('/', verifyToken, async (req, res) => {
 router.get('/findProfiles', verifyToken, async (req, res) => {
   try {
     const searchStr = req.query.search;
+
     if (!searchStr.length) return res.send([]);
-    const sql = queries.profiles.findProfiles(searchStr);
+    const sql = queries.profile.findProfiles(searchStr);
+
     const profiles = await query(sql);
 
     // If nothing found
