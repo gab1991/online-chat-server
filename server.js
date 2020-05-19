@@ -22,6 +22,9 @@ app.use('/api/profiles', profilesRouter);
 
 const uploadRouter = require('./routes/img_upoad');
 app.use('/api/img_upload', uploadRouter);
+
+const conversationRouter = require('./routes/conversation.js');
+app.use('/api/conversation', conversationRouter);
 //static files
 app.use(express.static('build'));
 app.use(express.static(process.env.PUBLIC_FOLDER));

@@ -1,6 +1,18 @@
 require('dotenv').config();
 
 const queries = {
+  transaction: {
+    strart: () => {
+      return `
+      START TRANSACTION;`;
+    },
+    commit: () => {
+      return `COMMIT;`;
+    },
+    rollback: () => {
+      return `ROLLBACK;`;
+    },
+  },
   user: {
     createTable: () => {
       return `CREATE TABLE IF NOT EXISTS user (
@@ -67,6 +79,10 @@ const queries = {
       values ('Private_${user_id}+${contact_id}', '${user_id}', NOW() );
       `;
     },
+    getConversations: () => {
+      return `
+      SELECT * FROM online_chat.conversation;`;
+    },
   },
   participant: {
     createTable: () => {
@@ -83,9 +99,9 @@ const queries = {
       return `SELECT * FROM participant
       where profile_id = '${profile_id}'`;
     },
-    createParticipant: (conversation_id, user_id) => {
-      return `insert into participant(conversation_id,user_id)
-      values ('${conversation_id}', '${user_id}');`;
+    createParticipant: (conversation_id, profile_id) => {
+      return `insert into participant (conversation_id, profile_id)
+      values ('${conversation_id}', '${profile_id}');`;
     },
   },
   message: {
