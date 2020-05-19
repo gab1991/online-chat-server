@@ -103,6 +103,14 @@ const queries = {
       return `insert into participant (conversation_id, profile_id)
       values ('${conversation_id}', '${profile_id}');`;
     },
+    searchMatchingConversation: (profile_id1, profile_id2) => {
+      return `
+      select * from participant
+      where profile_id = '${profile_id1}'
+      and conversation_id in (select conversation_id from participant
+      where profile_id = '${profile_id2}');
+      `;
+    },
   },
   message: {
     createTable: () => {
