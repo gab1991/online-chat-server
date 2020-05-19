@@ -79,9 +79,12 @@ const queries = {
       values ('Private_${user_id}+${contact_id}', '${user_id}', NOW() );
       `;
     },
-    getConversations: () => {
+    getConversations: (conversationIDs = []) => {
+      const inStr = conversationIDs.join(',');
+      console.log(inStr);
       return `
-      SELECT * FROM online_chat.conversation;`;
+      SELECT * FROM online_chat.conversation
+      where id in (${inStr});`;
     },
   },
   participant: {
@@ -98,6 +101,11 @@ const queries = {
     getPaticipants: (profile_id) => {
       return `SELECT * FROM participant
       where profile_id = '${profile_id}'`;
+    },
+    getPaticipantsByConversationsExeptUser: (conversationID, user_id) => {
+      return `SELECT * FROM participant
+      where conversation_id = ${conversationID}
+      and profile_id != ${user_id}`;
     },
     createParticipant: (conversation_id, profile_id) => {
       return `insert into participant (conversation_id, profile_id)

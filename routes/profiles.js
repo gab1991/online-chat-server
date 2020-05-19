@@ -16,6 +16,16 @@ router.get('/', verifyToken, async (req, res) => {
     const resp = await query(sql);
     const profile = resp[0];
     profile['avatar_path'] = generateAvatarPath(req, profile['avatar_url']);
+    const conversationList = await getConversations(profile.id);
+    for (let conversation of conversationList) {
+      conversation['participants'] = await query(
+        queries.participant.getPaticipantsByConversationsExeptUser(
+          conversation.id,
+          profile.id
+        )
+      );
+    }
+    profile.conversations = conversationList;
     res.send(profile);
   } catch (err) {
     console.log(err);
@@ -46,5 +56,24 @@ router.get('/findProfiles', verifyToken, async (req, res) => {
     res.status(500).send(err);
   }
 });
+
+async function getConversations(profile_id) {
+  try {
+    console.log(profile_id);
+    const participantRows = await query(
+      queries.participant.getPaticipants(profile_id)
+    );
+    const conversationIDs = [];
+    participantRows.forEach((row) => {
+      conversationIDs.push(row.conversation_id);
+    });
+    const conversations = await query(
+      queries.conversation.getConversations(conversationIDs)
+    );
+    return conversations;
+  } catch (err) {
+    return null;
+  }
+}
 
 module.exports = router;
