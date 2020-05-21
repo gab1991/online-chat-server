@@ -67,6 +67,7 @@ const queries = {
       return `CREATE TABLE IF NOT EXISTS conversation (
         id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
         title VARCHAR(40),
+        type ENUM('private','group'),
         creator_id INT NOT NULL,
         channel_id VARCHAR(45),
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -75,8 +76,8 @@ const queries = {
         ) ENGINE=INNODB;`;
     },
     createPrivateConversation: (user_id, contact_id) => {
-      return `Insert into conversation(title,creator_id,updated_at)
-      values ('Private_${user_id}+${contact_id}', '${user_id}', NOW() );
+      return `Insert into conversation(title,type,creator_id,updated_at)
+      values ('Private_${user_id}+${contact_id}', 'private', '${user_id}', NOW() );
       `;
     },
     getConversations: (conversationIDs = []) => {
@@ -132,6 +133,16 @@ const queries = {
         FOREIGN KEY (sender_id) REFERENCES profile (id),
         FOREIGN KEY (participant_id)  REFERENCES participant (id)
         ) ENGINE=INNODB;`;
+    },
+  },
+  crossTable: {
+    getProfilesExeptUserByConversationID: (user_id, conversation_id) => {
+      return `
+      SELECT p.* FROM participant as par
+      JOIN profile as p ON par.profile_id = p.id
+      where par.conversation_id = ${conversation_id}
+      and par.profile_id != ${user_id}
+      `;
     },
   },
 };

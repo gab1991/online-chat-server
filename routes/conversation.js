@@ -15,7 +15,7 @@ router.get(
       const { user_id, contact_id } = req.params;
       let conversation_id;
       conversation_id = await findConversation([user_id, contact_id]);
-
+      console.log({ user_id, contact_id });
       if (!conversation_id) {
         conversation_id = await createConversation([user_id, contact_id]);
       }

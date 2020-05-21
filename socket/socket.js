@@ -22,6 +22,17 @@ function initialization(server) {
     socket.on('connection', (data) => {
       console.log('asdasd');
     });
+    socket.on('subscribeToConversations', (conversations = []) => {
+      console.log('subscribing to rooms', conversations);
+      conversations.forEach((conversation) => {
+        socket.join(conversation.id);
+      });
+    });
+    socket.on('sendMessage', (data) => {
+      const { user_id, chatID, message } = data;
+      console.log({ user_id, chatID, message });
+      io.to(chatID).emit('passMsgToConversation', { user_id, chatID, message });
+    });
     // socket.on('enterChat', (data) => {
     //   console.log(data);
     //   socket.join(data.chatID);

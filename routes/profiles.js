@@ -15,15 +15,24 @@ router.get('/', verifyToken, async (req, res) => {
 
     const resp = await query(sql);
     const profile = resp[0];
-    profile['avatar_path'] = generateAvatarPath(req, profile['avatar_url']);
-    const conversationList = await getConversations(profile.id);
+
+    profile.avatar_path = generateAvatarPath(req, profile.avatar_url);
+    const conversationList = (await getConversations(profile.id)) || [];
+
     for (let conversation of conversationList) {
-      conversation['participants'] = await query(
-        queries.participant.getPaticipantsByConversationsExeptUser(
-          conversation.id,
-          profile.id
+      conversation.participants = await query(
+        queries.crossTable.getProfilesExeptUserByConversationID(
+          profile.id,
+          conversation.id
         )
       );
+      //adding avatart path
+      conversation.participants.forEach((participant) => {
+        participant.avatar_path = generateAvatarPath(
+          req,
+          participant.avatar_url
+        );
+      });
     }
     profile.conversations = conversationList;
     res.send(profile);
