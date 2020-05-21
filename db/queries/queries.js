@@ -134,6 +134,18 @@ const queries = {
         FOREIGN KEY (participant_id)  REFERENCES participant (id)
         ) ENGINE=INNODB;`;
     },
+    createMessage: (conversation_id, sender_id, message) => {
+      return `
+      INSERT INTO message (conversation_id, sender_id, participant_id, message, created_at)
+      VALUES(${conversation_id},${sender_id},${sender_id},'${message}',NOW())
+      `;
+    },
+    getNumberOfMessagesByConversationId: (number, conversationID) => {
+      return `
+      SELECT ${number || '*'} FROM message
+      WHERE conversation_id = ${conversationID};
+      `;
+    },
   },
   crossTable: {
     getProfilesExeptUserByConversationID: (user_id, conversation_id) => {

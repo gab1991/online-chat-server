@@ -22,40 +22,26 @@ function initialization(server) {
     socket.on('connection', (data) => {
       console.log('asdasd');
     });
-    socket.on('subscribeToConversations', (conversations = []) => {
-      console.log('subscribing to rooms', conversations);
-      conversations.forEach((conversation) => {
-        socket.join(conversation.id);
+    socket.on('subscribeToConversations', (conversations = {}) => {
+      Object.keys(conversations).forEach((key) => {
+        console.log('suscribed to chats', conversations[key].id);
+        socket.join(conversations[key].id);
       });
     });
-    socket.on('sendMessage', (data) => {
-      const { user_id, chatID, message } = data;
-      console.log({ user_id, chatID, message });
-      io.to(chatID).emit('passMsgToConversation', { user_id, chatID, message });
+    socket.on('sendMessage', async (data) => {
+      try {
+        const { user_id, chatID, message } = data;
+        await query(queries.message.createMessage(chatID, user_id, message));
+        io.to(chatID).emit('passMsgToConversation', {
+          user_id,
+          chatID,
+          message,
+        });
+      } catch (err) {
+        console.log(err);
+      }
     });
-    // socket.on('enterChat', (data) => {
-    //   console.log(data);
-    //   socket.join(data.chatID);
-    //   socket.emit('entered', `${data.user_id} joined room ${data.chatID}`);
-    // });
-
-    // socket.on('sendMessage', (data) => {
-    //   console.log(data);
-    //   io.to(data.chatID).emit('message', `${data.message}`);
-    // });
-
-    // socket.on('got into room', () => console.log('asda'));
   });
 }
 
 module.exports = initialization;
-
-// io.use((socket, next) => {
-//   // console.log('Query: ', socket.handshake.query);
-//   // return the result of next() to accept the connection.
-//   if (socket.handshake.query.foo == 'bar') {
-//     return next();
-//   }
-//   //   // call next() with an Error if you need to reject the connection.
-//   //   next(new Error('Authentication error'));
-// });

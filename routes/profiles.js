@@ -18,7 +18,7 @@ router.get('/', verifyToken, async (req, res) => {
 
     profile.avatar_path = generateAvatarPath(req, profile.avatar_url);
     const conversationList = (await getConversations(profile.id)) || [];
-
+    const conversationObj = {};
     for (let conversation of conversationList) {
       conversation.participants = await query(
         queries.crossTable.getProfilesExeptUserByConversationID(
@@ -33,8 +33,17 @@ router.get('/', verifyToken, async (req, res) => {
           participant.avatar_url
         );
       });
+      //adding messages
+      conversation.messages = await query(
+        queries.message.getNumberOfMessagesByConversationId(
+          null,
+          conversation.id
+        )
+      );
+      //adding conv to obj
+      conversationObj[conversation.id] = conversation;
     }
-    profile.conversations = conversationList;
+    profile.conversations = conversationObj;
     res.send(profile);
   } catch (err) {
     console.log(err);
