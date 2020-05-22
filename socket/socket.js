@@ -31,11 +31,19 @@ function initialization(server) {
     socket.on('sendMessage', async (data) => {
       try {
         const { user_id, chatID, message } = data;
-        await query(queries.message.createMessage(chatID, user_id, message));
+        const response = await query(
+          queries.message.createMessage(chatID, user_id, message)
+        );
+        console.log(new Date());
+
         io.to(chatID).emit('passMsgToConversation', {
-          user_id,
-          chatID,
-          message,
+          conversation_id: chatID,
+          created_at: new Date(),
+          id: Date.now(),
+          message: message,
+          participant_id: 2,
+          sender_id: user_id,
+          user_id: user_id,
         });
       } catch (err) {
         console.log(err);
