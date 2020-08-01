@@ -17,4 +17,13 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-module.exports = verifyToken;
+const getVerifiedUser = (token) => {
+  try {
+    const user = jwt.verify(token, process.env.TOKEN_SECRET)._id;
+    return user;
+  } catch (err) {
+    return null;
+  }
+};
+
+module.exports = { verifyToken, getVerifiedUser };

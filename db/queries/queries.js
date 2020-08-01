@@ -61,6 +61,11 @@ const queries = {
         where username like '${nameSearch}%'
         or displayed_name like '${nameSearch}%'`;
     },
+    updateDisplayedName: (username, newDispName) => {
+      return `update profile
+      set displayed_name = '${newDispName}'
+      where username='${username}';`;
+    },
   },
   conversation: {
     createTable: () => {

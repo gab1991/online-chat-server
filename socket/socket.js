@@ -1,27 +1,20 @@
 const socket = require('socket.io');
+const { getVerifiedUser } = require('../jwtVerification/verification');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
 
-// async function enterChat(data, socket) {
-//   console.log(data, socket);
-//   try {
-//     socket.emit(`entered`, `entered chat ${chatID}`);
-//     console.log(data);
-//     socket.join(chatID);
-//     socket.emit(`entered`, `entered chat ${chatID}`);
-//   } catch (err) {}
-// }
-
-async function getAllChats() {}
-
 function initialization(server) {
   const io = socket(server);
+
   io.on('connection', (socket) => {
     console.log('new ws connection');
 
-    socket.on('connection', (data) => {
-      console.log('asdasd');
+    socket.on('updProfile', (token) => {
+      console.log('updProfile', token);
+      const user = getVerifiedUser(token);
+      console.log(user);
     });
+
     socket.on('subscribeToConversations', (conversations = {}) => {
       Object.keys(conversations).forEach((key) => {
         console.log('suscribed to chats', conversations[key].id);

@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
-const verifyToken = require('../jwtVerification/verification.js');
+const { verifyToken } = require('../jwtVerification/verification.js');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
 const { generateAvatarPath } = require('../utils/utils.js');
@@ -71,6 +71,17 @@ router.get('/findProfiles', verifyToken, async (req, res) => {
     res.send(profiles);
   } catch (err) {
     console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+router.post('/updateDispName', verifyToken, async (req, res) => {
+  try {
+    const username = req.verifiedUserData._id;
+    const { dispName } = req.body;
+    await query(queries.profile.updateDisplayedName(username, dispName));
+    res.send({ displayed_name: dispName });
+  } catch (err) {
     res.status(500).send(err);
   }
 });
