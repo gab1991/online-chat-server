@@ -6,11 +6,10 @@ const cors = require('cors');
 const path = require('path');
 const http = require('http').createServer(app);
 
-//allows server accepts jason
+//allows server accepts json
 app.use(express.json());
 
 //allows cors requests
-// app.use(cors());
 app.use(cors());
 
 //CREATING ROUTES
