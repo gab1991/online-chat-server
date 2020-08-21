@@ -157,6 +157,33 @@ const queries = {
       `;
     },
   },
+  lastSeenMsgList: {
+    createTable: () => {
+      return `CREATE TABLE IF NOT EXISTS last_seen_msg_list (
+        id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+        conversation_id INT NOT NULL,
+        profile_id INT NOT NULL,
+        message_id INT NOT NULL,
+        FOREIGN KEY (conversation_id) REFERENCES conversation (id),
+        FOREIGN KEY (profile_id)  REFERENCES profile (id),
+        FOREIGN KEY (message_id)  REFERENCES message (id))
+         ENGINE=INNODB;`;
+    },
+    populateFullTableByLast: () => {
+      return `insert into last_seen_msg_list (conversation_id, profile_id, message_id)
+      SELECT p.conversation_id, p.profile_id,m.id as last_message_id FROM participant as p
+      join message as m on m.conversation_id = p.conversation_id
+      where m.id in (
+      select MAX(id) from message as m
+      group by m.conversation_id)
+      `;
+    },
+    getLastSeenMsg: (conversation_id, profile_id) => {
+      return `SELECT message_id FROM last_seen_msg_list
+      where conversation_id = ${conversation_id}
+      and profile_id = ${profile_id}`;
+    },
+  },
   crossTable: {
     getProfilesExeptUserByConversationID: (user_id, conversation_id) => {
       return `

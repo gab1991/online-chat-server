@@ -40,6 +40,15 @@ router.get('/', verifyToken, async (req, res) => {
           conversation.id
         )
       );
+      //adding last seen msg
+      const lastMsgQueryResult = await query(
+        queries.lastSeenMsgList.getLastSeenMsg(conversation.id, profile.id)
+      );
+      if (lastMsgQueryResult) {
+        conversation.last_seen_msg_id = lastMsgQueryResult[0].message_id;
+      } else {
+        conversation.last_seen_msg_id = 0;
+      }
       //adding conv to obj
       conversationObj[conversation.id] = conversation;
     }

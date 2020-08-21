@@ -23,6 +23,10 @@ function initializeTables(db) {
   db.query(queries.message.createTable(), (err) => {
     if (err) throw err;
   });
+  //LastSeenMsgList table
+  db.query(queries.lastSeenMsgList.createTable(), (err) => {
+    if (err) throw err;
+  });
 }
 
 module.exports = initializeTables;
