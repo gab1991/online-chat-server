@@ -55,7 +55,7 @@ async function createConversation(participant_ids = []) {
   try {
     console.log('here');
     //Start transaction
-    await query(queries.transaction.strart());
+    await query(queries.transaction.start());
     //CreateConversation;
     let sql;
     if (participant_ids.length === 2) {

@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const queries = {
   transaction: {
-    strart: () => {
+    start: () => {
       return `
       START TRANSACTION;`;
     },
@@ -178,8 +178,15 @@ const queries = {
       group by m.conversation_id)
       `;
     },
+
     getLastSeenMsg: (conversation_id, profile_id) => {
       return `SELECT message_id FROM last_seen_msg_list
+      where conversation_id = ${conversation_id}
+      and profile_id = ${profile_id}`;
+    },
+    setLastSeenMsg: (conversation_id, profile_id, msg_id) => {
+      return `UPDATE last_seen_msg_list
+      set message_id = ${msg_id}
       where conversation_id = ${conversation_id}
       and profile_id = ${profile_id}`;
     },
