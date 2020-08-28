@@ -156,6 +156,12 @@ const queries = {
       WHERE conversation_id = ${conversationID};
       `;
     },
+    getLastMsgIdInConversation: (conversationID) => {
+      return `
+      SELECT max(id) as id FROM message
+      WHERE conversation_id = ${conversationID};
+      `;
+    },
   },
   lastSeenMsgList: {
     createTable: () => {

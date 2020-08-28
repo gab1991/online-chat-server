@@ -54,6 +54,34 @@ function initialization(server) {
         console.log(err);
       }
     });
+
+    socket.on('markMsgAsRead', async (data) => {
+      try {
+        const { userId, chatID } = data;
+        const response = await query(
+          queries.message.getLastMsgIdInConversation(chatID)
+        );
+        const lastMsgInConversation = response[0].id || 0;
+
+        // setting all msgs as read
+        await query(
+          queries.lastSeenMsgList.setLastSeenMsg(
+            chatID,
+            userId,
+            lastMsgInConversation
+          )
+        );
+        // sending response to listener
+
+        socket.emit('updateLastSeenMsg', {
+          user_id: userId,
+          conversation_id: chatID,
+          last_seen_msg_id: lastMsgInConversation,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    });
   });
 }
 
