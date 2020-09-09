@@ -29,9 +29,9 @@ app.use(express.static('build'));
 app.use(express.static(process.env.PUBLIC_FOLDER));
 
 // Basic html sending
-// app.get('*', (req, res) => {
-//   res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
-// });
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+});
 
 // Run socket on client connection
 require('./socket/socket')(http);
