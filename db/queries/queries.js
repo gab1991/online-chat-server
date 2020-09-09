@@ -87,7 +87,6 @@ const queries = {
     },
     getConversations: (conversationIDs = []) => {
       const inStr = conversationIDs.join(',');
-      console.log(inStr);
       return `
       SELECT * FROM online_chat.conversation
       where id in (${inStr});`;

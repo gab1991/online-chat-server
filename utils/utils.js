@@ -12,7 +12,6 @@ function generateRandomHash(length) {
 function generateAvatarPath(req, db_url) {
   if (!db_url) return null;
   const host = req.get('host');
-  console.log(`http://${host}/upload/avatars/${db_url}`);
   return `http://${host}/upload/avatars/${db_url}`;
 }
 

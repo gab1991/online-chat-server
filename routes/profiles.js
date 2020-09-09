@@ -1,6 +1,4 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { verifyToken } = require('../jwtVerification/verification.js');
 const { query } = require('../db/index');
@@ -97,7 +95,6 @@ router.post('/updateDispName', verifyToken, async (req, res) => {
 
 async function getConversations(profile_id) {
   try {
-    console.log(profile_id);
     const participantRows = await query(
       queries.participant.getPaticipants(profile_id)
     );

@@ -1,5 +1,4 @@
 const socket = require('socket.io');
-const { getVerifiedUser } = require('../jwtVerification/verification');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
 
@@ -11,7 +10,6 @@ function initialization(server) {
 
     socket.on('subscribeToConversations', (conversations = {}) => {
       Object.keys(conversations).forEach((key) => {
-        console.log('suscribed to chats', conversations[key].id);
         socket.join(conversations[key].id);
       });
     });

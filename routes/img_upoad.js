@@ -1,6 +1,4 @@
 const express = require('express');
-const fs = require('fs');
-const { promisify } = require('util');
 const path = require('path');
 const router = express.Router();
 const { verifyToken } = require('../jwtVerification/verification.js');

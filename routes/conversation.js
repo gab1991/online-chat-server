@@ -1,11 +1,8 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { verifyToken } = require('../jwtVerification/verification.js');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
-const { generateAvatarPath } = require('../utils/utils.js');
 
 router.get(
   '/conversationEnter/:user_id/:contact_id',
@@ -15,7 +12,6 @@ router.get(
       const { user_id, contact_id } = req.params;
       let conversation_id;
       conversation_id = await findConversation([user_id, contact_id]);
-      console.log({ user_id, contact_id });
       if (!conversation_id) {
         conversation_id = await createConversation([user_id, contact_id]);
       }
@@ -27,14 +23,14 @@ router.get(
   }
 );
 
-router.get(
-  '/getConversationData/:conversationID',
-  verifyToken,
-  async (req, res) => {
-    try {
-    } catch (err) {}
-  }
-);
+// router.get(
+//   '/getConversationData/:conversationID',
+//   verifyToken,
+//   async (req, res) => {
+//     try {
+//     } catch (err) {}
+//   }
+// );
 
 async function findConversation(participants = []) {
   try {
@@ -53,7 +49,6 @@ async function findConversation(participants = []) {
 
 async function createConversation(participant_ids = []) {
   try {
-    console.log('here');
     //Start transaction
     await query(queries.transaction.start());
     //CreateConversation;
@@ -66,7 +61,7 @@ async function createConversation(participant_ids = []) {
     }
     const res = await query(sql);
     const conversationId = res.insertId;
-    console.log(res);
+
     // Create participants
     participant_ids.forEach(async (participant_id) => {
       await query(
