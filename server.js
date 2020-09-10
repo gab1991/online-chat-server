@@ -5,12 +5,16 @@ const app = express();
 const cors = require('cors');
 const path = require('path');
 const http = require('http').createServer(app);
+const compression = require('compression');
 
 //allows server accepts json
 app.use(express.json());
 
 //allows cors requests
 app.use(cors());
+
+//enable compression
+app.use(compression());
 
 //CREATING ROUTES
 const usersRouter = require('./routes/users.js');
