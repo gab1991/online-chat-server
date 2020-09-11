@@ -189,6 +189,10 @@ const queries = {
       where conversation_id = ${conversation_id}
       and profile_id = ${profile_id}`;
     },
+    insertLastSeenMsg: (conversation_id, profile_id, message_id) => {
+      return `insert into last_seen_msg_list(conversation_id, profile_id,message_id)
+      values (${conversation_id}, ${profile_id}, ${message_id});`;
+    },
     setLastSeenMsg: (conversation_id, profile_id, msg_id) => {
       return `UPDATE last_seen_msg_list
       set message_id = ${msg_id}

@@ -17,6 +17,7 @@ router.get('/', verifyToken, async (req, res) => {
     profile.avatar_path = generateAvatarPath(req, profile.avatar_url);
     const conversationList = (await getConversations(profile.id)) || [];
     const conversationObj = {};
+
     for (let conversation of conversationList) {
       conversation.participants = await query(
         queries.crossTable.getProfilesExeptUserByConversationID(
@@ -42,7 +43,8 @@ router.get('/', verifyToken, async (req, res) => {
       const lastMsgQueryResult = await query(
         queries.lastSeenMsgList.getLastSeenMsg(conversation.id, profile.id)
       );
-      if (lastMsgQueryResult) {
+
+      if (lastMsgQueryResult[0]) {
         conversation.last_seen_msg_id = lastMsgQueryResult[0].message_id;
       } else {
         conversation.last_seen_msg_id = 0;

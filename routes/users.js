@@ -4,6 +4,8 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
+const { verifyToken } = require('../jwtVerification/verification.js');
+const e = require('express');
 
 router.post('/sign_up', async (req, res) => {
   const { username, password, email } = req.body;
@@ -78,6 +80,30 @@ router.post('/login', async (req, res) => {
     res.send({ success: 'Log In', username: username });
   } catch (err) {
     res.status(500).send(err);
+  }
+});
+
+router.post('/checkTokenValidity', verifyToken, async (req, res) => {
+  try {
+    const username_token = req.verifiedUserData._id;
+    const username_req = req.body.username;
+
+    //check if user exists in bd
+    const user_bd = await query(queries.user.findUser(username_req));
+    //check if profile exists in bd
+    const user_profile = await query(queries.profile.getProfile(username_req));
+
+    if (
+      username_token === username_req &&
+      user_bd.length &&
+      user_profile.length
+    ) {
+      res.send({ success: true });
+    } else {
+      res.status(400).send({ success: false, msg: 'validity problems' });
+    }
+  } catch (err) {
+    res.status(400).send({ err });
   }
 });
 

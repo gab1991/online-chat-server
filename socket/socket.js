@@ -62,13 +62,32 @@ function initialization(server) {
         const lastMsgInConversation = response[0].id || 0;
 
         // setting all msgs as read
-        await query(
-          queries.lastSeenMsgList.setLastSeenMsg(
+        // check if there is no record
+        const res = await query(
+          queries.lastSeenMsgList.getLastSeenMsg(
             chatID,
             userId,
             lastMsgInConversation
           )
         );
+
+        if (res.length) {
+          await query(
+            queries.lastSeenMsgList.setLastSeenMsg(
+              chatID,
+              userId,
+              lastMsgInConversation
+            )
+          );
+        } else {
+          await query(
+            queries.lastSeenMsgList.insertLastSeenMsg(
+              chatID,
+              userId,
+              lastMsgInConversation
+            )
+          );
+        }
         // sending response to listener
 
         socket.emit('updateLastSeenMsg', {

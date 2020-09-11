@@ -23,15 +23,6 @@ router.get(
   }
 );
 
-// router.get(
-//   '/getConversationData/:conversationID',
-//   verifyToken,
-//   async (req, res) => {
-//     try {
-//     } catch (err) {}
-//   }
-// );
-
 async function findConversation(participants = []) {
   try {
     const sql = queries.participant.searchMatchingConversation(...participants);
