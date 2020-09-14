@@ -38,10 +38,10 @@ router.post('/sign_up', async (req, res) => {
     const errObj = {};
     if (err.code === 'ER_DUP_ENTRY') {
       const sqlErrMessage = err.sqlMessage;
-      if (sqlErrMessage.includes('username_UNIQUE')) {
+      if (sqlErrMessage.includes('username')) {
         errObj.err_message = `This username : ${username} already exists`;
         errObj.field = 'username';
-      } else if (sqlErrMessage.includes('email_UNIQUE')) {
+      } else if (sqlErrMessage.includes('email')) {
         errObj.err_message = `User with email ${email} already exists`;
         errObj.field = 'email';
       }
@@ -100,7 +100,7 @@ router.post('/checkTokenValidity', verifyToken, async (req, res) => {
     ) {
       res.send({ success: true });
     } else {
-      res.status(400).send({ success: false, msg: 'validity problems' });
+      res.status(401).send({ success: false, msg: 'validity problems' });
     }
   } catch (err) {
     res.status(400).send({ err });

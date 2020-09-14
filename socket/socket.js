@@ -1,3 +1,4 @@
+const e = require('express');
 const socket = require('socket.io');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
@@ -6,7 +7,7 @@ function initialization(server) {
   const io = socket(server);
 
   io.on('connection', (socket) => {
-    console.log('new ws connection');
+    // console.log('new ws connection');
 
     socket.on('subscribeToConversations', (conversations = {}) => {
       Object.keys(conversations).forEach((key) => {
@@ -61,9 +62,15 @@ function initialization(server) {
         );
         const lastMsgInConversation = response[0].id || 0;
 
-        // setting all msgs as read
-        // check if there is no record
-        const res = await query(
+        // get last msg in this chat
+        const [lastMsgInChatSqlRes] = await query(
+          queries.message.getLastMsgIdInConversation(chatID)
+        );
+        // if there is no a single message
+        if (!lastMsgInChatSqlRes || !lastMsgInChatSqlRes.id) return;
+
+        // checking for existing lastSeen
+        const [currentLastSeen] = await query(
           queries.lastSeenMsgList.getLastSeenMsg(
             chatID,
             userId,
@@ -71,7 +78,7 @@ function initialization(server) {
           )
         );
 
-        if (res.length) {
+        if (currentLastSeen) {
           await query(
             queries.lastSeenMsgList.setLastSeenMsg(
               chatID,

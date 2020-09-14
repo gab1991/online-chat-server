@@ -10,12 +10,16 @@ router.get(
   async (req, res) => {
     try {
       const { user_id, contact_id } = req.params;
+      let isNewConversation = false;
       let conversation_id;
+
       conversation_id = await findConversation([user_id, contact_id]);
       if (!conversation_id) {
         conversation_id = await createConversation([user_id, contact_id]);
+        isNewConversation = true;
       }
-      res.send({ conversation_id });
+
+      res.send({ conversation_id, isNewConversation });
     } catch (err) {
       console.log(err);
       res.status(500).send(err);
