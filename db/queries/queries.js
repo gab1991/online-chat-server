@@ -136,7 +136,14 @@ const queries = {
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (sender_id) REFERENCES profile (id),
         FOREIGN KEY (participant_id)  REFERENCES participant (id)
-        ) ENGINE=INNODB;`;
+        ) ENGINE=INNODB;
+        `;
+    },
+    changeEncoding: () => {
+      return `ALTER TABLE
+      message
+      CONVERT TO CHARACTER SET utf8mb4
+      COLLATE utf8mb4_unicode_ci;`;
     },
     createMessage: (conversation_id, sender_id, message) => {
       return `
