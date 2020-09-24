@@ -107,6 +107,10 @@ const queries = {
       return `SELECT * FROM participant
       where profile_id = '${profile_id}'`;
     },
+    getParticipantsByChatID: (chatID) => {
+      return `SELECT profile_id FROM participant
+      where conversation_id = ${chatID};`;
+    },
     getPaticipantsByConversationsExeptUser: (conversationID, user_id) => {
       return `SELECT * FROM participant
       where conversation_id = ${conversationID}

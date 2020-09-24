@@ -19,7 +19,7 @@ app.use(compression());
 const usersRouter = require('./routes/users.js');
 app.use('/api/users', usersRouter);
 
-const profilesRouter = require('./routes/profiles.js');
+const { profilesRouter } = require('./routes/profiles.js');
 app.use('/api/profiles', profilesRouter);
 
 const uploadRouter = require('./routes/img_upoad');

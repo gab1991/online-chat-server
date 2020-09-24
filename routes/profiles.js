@@ -15,43 +15,10 @@ router.get('/', verifyToken, async (req, res) => {
     const profile = resp[0];
 
     profile.avatar_path = generateAvatarPath(req, profile.avatar_url);
+
     const conversationList = (await getConversations(profile.id)) || [];
-    const conversationObj = {};
+    const conversationObj = await fillConvObj(conversationList, profile, req);
 
-    for (let conversation of conversationList) {
-      conversation.participants = await query(
-        queries.crossTable.getProfilesExeptUserByConversationID(
-          profile.id,
-          conversation.id
-        )
-      );
-      //adding avatart path
-      conversation.participants.forEach((participant) => {
-        participant.avatar_path = generateAvatarPath(
-          req,
-          participant.avatar_url
-        );
-      });
-      //adding messages
-      conversation.messages = await query(
-        queries.message.getNumberOfMessagesByConversationId(
-          null,
-          conversation.id
-        )
-      );
-      //adding last seen msg
-      const lastMsgQueryResult = await query(
-        queries.lastSeenMsgList.getLastSeenMsg(conversation.id, profile.id)
-      );
-
-      if (lastMsgQueryResult[0]) {
-        conversation.last_seen_msg_id = lastMsgQueryResult[0].message_id;
-      } else {
-        conversation.last_seen_msg_id = 0;
-      }
-      //adding conv to obj
-      conversationObj[conversation.id] = conversation;
-    }
     profile.conversations = conversationObj;
     res.send(profile);
   } catch (err) {
@@ -113,4 +80,39 @@ async function getConversations(profile_id) {
   }
 }
 
-module.exports = router;
+//need to rewrite this
+async function fillConvObj(conversationList, profile, req) {
+  const conversationObj = {};
+
+  for (let conversation of conversationList) {
+    conversation.participants = await query(
+      queries.crossTable.getProfilesExeptUserByConversationID(
+        profile.id,
+        conversation.id
+      )
+    );
+    //adding avatart path
+    conversation.participants.forEach((participant) => {
+      participant.avatar_path = generateAvatarPath(req, participant.avatar_url);
+    });
+    //adding messages
+    conversation.messages = await query(
+      queries.message.getNumberOfMessagesByConversationId(null, conversation.id)
+    );
+    //adding last seen msg
+    const lastMsgQueryResult = await query(
+      queries.lastSeenMsgList.getLastSeenMsg(conversation.id, profile.id)
+    );
+
+    if (lastMsgQueryResult[0]) {
+      conversation.last_seen_msg_id = lastMsgQueryResult[0].message_id;
+    } else {
+      conversation.last_seen_msg_id = 0;
+    }
+    //adding conv to obj
+    conversationObj[conversation.id] = conversation;
+  }
+  return conversationObj;
+}
+
+module.exports = { profilesRouter: router, getConversations };

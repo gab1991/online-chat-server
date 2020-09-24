@@ -71,4 +71,6 @@ async function createConversation(participant_ids = []) {
     await query(queries.transaction.rollback());
   }
 }
+
+async function updateConvObj() {}
 module.exports = router;

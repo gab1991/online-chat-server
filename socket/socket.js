@@ -1,13 +1,35 @@
-const e = require('express');
 const socket = require('socket.io');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
+const { getConversations } = require('../routes/profiles');
+
+const onlineUsers = {};
 
 function initialization(server) {
   const io = socket(server);
 
   io.on('connection', (socket) => {
-    // console.log('new ws connection');
+    socket.on('setIsOnline', async (username) => {
+      const socketID = socket.id;
+
+      try {
+        const [profile] = await query(queries.profile.getProfile(username));
+
+        const currentConversations = (await getConversations(profile.id)) || [];
+
+        const conversationObj = {};
+
+        for (let conversation of currentConversations) {
+          const { id } = conversation;
+          //should change in the future. But for now its enough for sending a new conversation object if user dosen't have a chat
+          conversationObj[id] = id;
+        }
+
+        onlineUsers[profile.id] = { socketID, conversations: conversationObj };
+      } catch (err) {
+        console.log(err);
+      }
+    });
 
     socket.on('subscribeToConversations', (conversations = {}) => {
       Object.keys(conversations).forEach((key) => {
@@ -35,6 +57,7 @@ function initialization(server) {
         // commit transaction
         await query(queries.transaction.commit());
 
+        // emit msg to everyone in this chat
         io.to(chatID).emit('passMsgToConversation', {
           conversation_id: chatID,
           created_at: new Date(),
@@ -43,6 +66,12 @@ function initialization(server) {
           sender_id: user_id,
           user_id: user_id,
         });
+
+        //if this is a new conversation for smb we need to upd their conversations obj
+        const noChatUsers = await getUsersWithoutChat(chatID);
+        for (let user of noChatUsers) {
+          io.to(user.socketID).emit('newChatCreated', { chatID });
+        }
 
         socket.emit('updateLastSeenMsg', {
           user_id: user_id,
@@ -107,6 +136,32 @@ function initialization(server) {
       }
     });
   });
+}
+
+async function getUsersWithoutChat(chatID) {
+  try {
+    const chatParticipantsArr = await query(
+      queries.participant.getParticipantsByChatID(chatID)
+    );
+
+    // check if all the users have this chat now;
+    const usersWithoNoChat = [];
+    for (let user of chatParticipantsArr) {
+      if (
+        onlineUsers[user.profile_id] &&
+        !onlineUsers[user.profile_id].conversations[chatID]
+      ) {
+        usersWithoNoChat.push({
+          user_id: user.profile_id,
+          socketID: onlineUsers[user.profile_id].socketID,
+        });
+      }
+    }
+    return usersWithoNoChat;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }
 
 module.exports = initialization;
