@@ -4,6 +4,7 @@ const queries = require('../db/queries/queries');
 const { getConversations } = require('../routes/conversation');
 
 const onlineUsers = {};
+const socketIdtoUserIdMap = {};
 
 function initialization(server) {
   const io = socket(server);
@@ -26,6 +27,8 @@ function initialization(server) {
         }
 
         onlineUsers[profile.id] = { socketID, conversations: conversationObj };
+
+        socketIdtoUserIdMap[socketID] = profile.id;
       } catch (err) {
         console.log(err);
       }
@@ -137,6 +140,12 @@ function initialization(server) {
       } catch (err) {
         console.log(err);
       }
+    });
+
+    socket.on('disconnecting', (reason) => {
+      const disconectUser = socketIdtoUserIdMap[socket.id];
+      // set userOffline
+      onlineUsers[disconectUser] = null;
     });
   });
 }
