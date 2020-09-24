@@ -4,6 +4,7 @@ const { verifyToken } = require('../jwtVerification/verification.js');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
 const { generateAvatarPath } = require('../utils/utils.js');
+const { getConvObj } = require('../routes/conversation');
 
 router.get('/', verifyToken, async (req, res) => {
   try {
@@ -16,10 +17,9 @@ router.get('/', verifyToken, async (req, res) => {
 
     profile.avatar_path = generateAvatarPath(req, profile.avatar_url);
 
-    const conversationList = (await getConversations(profile.id)) || [];
-    const conversationObj = await fillConvObj(conversationList, profile, req);
-
+    const conversationObj = await getConvObj(profile.id, req);
     profile.conversations = conversationObj;
+
     res.send(profile);
   } catch (err) {
     console.log(err);
@@ -62,57 +62,4 @@ router.post('/updateDispName', verifyToken, async (req, res) => {
   }
 });
 
-async function getConversations(profile_id) {
-  try {
-    const participantRows = await query(
-      queries.participant.getPaticipants(profile_id)
-    );
-    const conversationIDs = [];
-    participantRows.forEach((row) => {
-      conversationIDs.push(row.conversation_id);
-    });
-    const conversations = await query(
-      queries.conversation.getConversations(conversationIDs)
-    );
-    return conversations;
-  } catch (err) {
-    return null;
-  }
-}
-
-//need to rewrite this
-async function fillConvObj(conversationList, profile, req) {
-  const conversationObj = {};
-
-  for (let conversation of conversationList) {
-    conversation.participants = await query(
-      queries.crossTable.getProfilesExeptUserByConversationID(
-        profile.id,
-        conversation.id
-      )
-    );
-    //adding avatart path
-    conversation.participants.forEach((participant) => {
-      participant.avatar_path = generateAvatarPath(req, participant.avatar_url);
-    });
-    //adding messages
-    conversation.messages = await query(
-      queries.message.getNumberOfMessagesByConversationId(null, conversation.id)
-    );
-    //adding last seen msg
-    const lastMsgQueryResult = await query(
-      queries.lastSeenMsgList.getLastSeenMsg(conversation.id, profile.id)
-    );
-
-    if (lastMsgQueryResult[0]) {
-      conversation.last_seen_msg_id = lastMsgQueryResult[0].message_id;
-    } else {
-      conversation.last_seen_msg_id = 0;
-    }
-    //adding conv to obj
-    conversationObj[conversation.id] = conversation;
-  }
-  return conversationObj;
-}
-
-module.exports = { profilesRouter: router, getConversations };
+module.exports = { profilesRouter: router };

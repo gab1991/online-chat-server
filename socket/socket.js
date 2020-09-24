@@ -1,7 +1,7 @@
 const socket = require('socket.io');
 const { query } = require('../db/index');
 const queries = require('../db/queries/queries');
-const { getConversations } = require('../routes/profiles');
+const { getConversations } = require('../routes/conversation');
 
 const onlineUsers = {};
 
@@ -70,7 +70,10 @@ function initialization(server) {
         //if this is a new conversation for smb we need to upd their conversations obj
         const noChatUsers = await getUsersWithoutChat(chatID);
         for (let user of noChatUsers) {
-          io.to(user.socketID).emit('newChatCreated', { chatID });
+          io.to(user.socketID).emit('needToUpdChatObj', {
+            chatID,
+            sender_id: user_id,
+          });
         }
 
         socket.emit('updateLastSeenMsg', {
