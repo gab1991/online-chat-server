@@ -42,7 +42,7 @@ function initialization(server) {
 
     socket.on('sendMessage', async (data) => {
       try {
-        const { user_id, chatID, message } = data;
+        const { user_id, chatID, message, dummyID } = data;
         //starting transaction
         await query(queries.transaction.start());
         // execute createMsg
@@ -60,14 +60,25 @@ function initialization(server) {
         // commit transaction
         await query(queries.transaction.commit());
 
-        // emit msg to everyone in this chat
-        io.to(chatID).emit('passMsgToConversation', {
+        const newMsg = {
           conversation_id: chatID,
           created_at: new Date(),
           id: lastInsertedMsgId,
           message: message,
           sender_id: user_id,
           user_id: user_id,
+        };
+
+        // emit msg to everyone except sender in this chat
+        socket.to(chatID).emit('newMsgArrived', newMsg);
+
+        // emit msg to the sender
+        socket.emit('myMsgCreated', { newMsg, dummyID });
+
+        socket.emit('updateLastSeenMsg', {
+          user_id: user_id,
+          conversation_id: chatID,
+          last_seen_msg_id: lastInsertedMsgId,
         });
 
         //if this is a new conversation for smb we need to upd their conversations obj
@@ -78,12 +89,6 @@ function initialization(server) {
             sender_id: user_id,
           });
         }
-
-        socket.emit('updateLastSeenMsg', {
-          user_id: user_id,
-          conversation_id: chatID,
-          last_seen_msg_id: lastInsertedMsgId,
-        });
       } catch (err) {
         console.log(err);
       }
