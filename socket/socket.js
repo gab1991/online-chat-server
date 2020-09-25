@@ -46,7 +46,7 @@ function initialization(server) {
         //starting transaction
         await query(queries.transaction.start());
         // execute createMsg
-        await query(queries.message.createMessage(chatID, user_id, message));
+        await query(queries.message.createMessage(chatID, user_id), [message]);
         // adding lastSeenMsgId
         const lastIdResp = await query(queries.message.lastInsert());
         const lastInsertedMsgId = lastIdResp[0]['last_insert_id()'];

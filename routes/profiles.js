@@ -32,9 +32,7 @@ router.get('/findProfiles', verifyToken, async (req, res) => {
     const searchStr = req.query.search;
 
     if (!searchStr.length) return res.send([]);
-    const sql = queries.profile.findProfiles(searchStr);
-
-    const profiles = await query(sql);
+    const profiles = await query(queries.profile.findProfiles(searchStr));
 
     // If nothing found
     if (!profiles.length) {

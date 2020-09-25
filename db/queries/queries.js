@@ -152,7 +152,7 @@ const queries = {
     createMessage: (conversation_id, sender_id, message) => {
       return `
       INSERT INTO message (conversation_id, sender_id, participant_id, message, created_at)
-      VALUES(${conversation_id},${sender_id},${sender_id},'${message}',NOW());
+      VALUES(${conversation_id},${sender_id},${sender_id}, ? ,NOW());
       `;
     },
     lastInsert: () => {
