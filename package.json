@@ -1,10 +1,10 @@
 {
-  "name": "server",
-  "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "name": "meteora-server",
+  "version": "2.0.0",
+  "description": "server part of the meteora messenger",
+  "author": "Igor Kornilov",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
