@@ -15,11 +15,7 @@ router.post('/sign_up', async (req, res) => {
     const hashPassword = await bcrypt.hash(password, salt);
 
     //Saving user to DB
-    const createUserSql = queries.user.createUser(
-      username,
-      hashPassword,
-      email
-    );
+    const createUserSql = queries.user.createUser(username, hashPassword, email);
     await query(createUserSql);
 
     //Create profile entry
@@ -93,11 +89,7 @@ router.post('/checkTokenValidity', verifyToken, async (req, res) => {
     //check if profile exists in bd
     const user_profile = await query(queries.profile.getProfile(username_req));
 
-    if (
-      username_token === username_req &&
-      user_bd.length &&
-      user_profile.length
-    ) {
+    if (username_token === username_req && user_bd.length && user_profile.length) {
       res.send({ success: true });
     } else {
       res.status(401).send({ success: false, msg: 'validity problems' });

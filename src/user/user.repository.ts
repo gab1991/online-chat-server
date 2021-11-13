@@ -3,13 +3,24 @@ import { Repository, EntityRepository, QueryFailedError } from 'typeorm';
 import { UserCreationDto } from './dto/userCreation.dto';
 import { User } from './user.entity';
 import { DatabaseError } from 'pg';
+import * as bcrypt from 'bcrypt';
 
 const bdUniqnessErrorCode = '23505';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
   async createUser(userCreationDto: UserCreationDto): Promise<User> {
-    const user = this.create({ ...userCreationDto, displayedName: userCreationDto.name });
+    const { password, name } = userCreationDto;
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const user = this.create({
+      ...userCreationDto,
+      displayedName: name,
+      password: hashPassword,
+    });
+
     try {
       return await this.save(user);
     } catch (err) {
