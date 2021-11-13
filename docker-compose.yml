@@ -1,0 +1,18 @@
+version: '3.9'
+
+services:
+  meteora-postgres:
+    image: postgres:14-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: meteora-db
+    ports:
+      - '5432:5432'
+
+  pgadmin:
+    image: thajeztah/pgadmin4
+    restart: always
+    ports:
+      - '5050:5050'
