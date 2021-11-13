@@ -34,4 +34,8 @@ export class UsersRepository extends Repository<User> {
       }
     }
   }
+
+  async findByNameOrEmail(nameOrEmail: string): Promise<User> {
+    return await this.findOne({ where: [{ name: nameOrEmail }, { email: nameOrEmail }] });
+  }
 }

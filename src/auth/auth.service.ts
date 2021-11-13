@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UserCreationDto } from 'src/user/dto/userCreation.dto';
+import { UserLoginDto, UserCreationDto } from 'src/user/dto';
+import { User } from 'src/user/user.entity';
 import { UsersRepository } from 'src/user/user.repository';
-
+import { compare } from 'bcrypt';
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,5 +14,15 @@ export class AuthService {
   async signUp(userCreationDto: UserCreationDto): Promise<void> {
     await this.usersRepository.createUser(userCreationDto);
   }
-  // createUser
+
+  async signIn(userLoginDto: UserLoginDto): Promise<User> {
+    const { nameOrEmail, password } = userLoginDto;
+    const user = await this.usersRepository.findByNameOrEmail(nameOrEmail);
+
+    if (user && (await compare(password, user.password))) {
+      return user;
+    }
+
+    throw new UnauthorizedException('Credentials are not valid');
+  }
 }

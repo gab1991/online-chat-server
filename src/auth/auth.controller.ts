@@ -1,7 +1,8 @@
-import { BadRequestException, Body, ConflictException, Controller, Post } from '@nestjs/common';
-import { UserCreationDto } from 'src/user/dto/userCreation.dto';
+import { Body, ConflictException, Controller, HttpCode, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AppError, ArrErrorCode } from 'src/utils/appError';
+import { UserLoginDto, UserCreationDto } from 'src/user/dto';
+import { User } from 'src/user/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -19,5 +20,11 @@ export class AuthController {
       }
       throw err;
     }
+  }
+
+  @Post('/signin')
+  @HttpCode(200)
+  signIn(@Body() userLoginDto: UserLoginDto): Promise<User> {
+    return this.authServie.signIn(userLoginDto);
   }
 }
