@@ -1,10 +1,11 @@
-import { Body, ConflictException, Controller, HttpCode, Post } from '@nestjs/common';
+import { Body, ConflictException, Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
 
 import { UserCreationDto, UserLoginDto } from 'user/dto';
 import { User } from 'user/user.entity';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
 import { AuthService } from './auth.service';
+import { AuthCookieIssuer } from './tokenIssuer.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -26,6 +27,7 @@ export class AuthController {
 
   @Post('/signin')
   @HttpCode(200)
+  @UseInterceptors(AuthCookieIssuer)
   signIn(@Body() userLoginDto: UserLoginDto): Promise<User> {
     return this.authServie.signIn(userLoginDto);
   }

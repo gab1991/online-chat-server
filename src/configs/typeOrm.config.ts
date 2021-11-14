@@ -1,8 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
 export const typeOrmConfig = (): Partial<TypeOrmModuleOptions> => {
-  console.log(process.env.NODE_ENV);
-
   return {
     type: 'postgres',
     host: process.env.DB_HOST,
