@@ -3,18 +3,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { User } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
+import { typeOrmConfig } from './configs/typeOrmConfig';
+
+const isProd = process.env.NODE_ENV === 'production';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: 'localhost',
-      port: 5432,
-      username: 'postgres',
-      password: 'postgres',
-      database: 'meteora-db',
-      entities: [User],
-      synchronize: true,
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: [isProd ? '.prod.env' : '.dev.env'], load: [typeOrmConfig] }),
+    TypeOrmModule.forRootAsync({
+      useFactory: () => ({
+        entities: [User],
+        ...typeOrmConfig(),
+      }),
     }),
     UserModule,
     AuthModule,
