@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { UsersRepository } from 'src/user/user.repository';
+import { UsersRepository } from 'user/user.repository';
+
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 

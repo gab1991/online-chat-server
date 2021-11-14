@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
-import { User } from './user/user.entity';
-import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import { typeOrmConfig } from './configs/typeOrmConfig';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { AuthModule } from 'auth/auth.module';
+import { typeOrmConfig } from 'configs/typeOrmConfig';
+import { User } from 'user/user.entity';
+import { UserModule } from 'user/user.module';
 
 const isProd = process.env.NODE_ENV === 'production';
 

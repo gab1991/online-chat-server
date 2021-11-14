@@ -1,9 +1,11 @@
-import { AppError, ArrErrorCode } from 'src/utils/appError';
-import { Repository, EntityRepository, QueryFailedError } from 'typeorm';
-import { UserCreationDto } from './dto/userCreation.dto';
-import { User } from './user.entity';
-import { DatabaseError } from 'pg';
 import * as bcrypt from 'bcrypt';
+import { DatabaseError } from 'pg';
+import { EntityRepository, QueryFailedError, Repository } from 'typeorm';
+
+import { UserCreationDto } from './dto/userCreation.dto';
+import { AppError, ArrErrorCode } from 'utils/appError';
+
+import { User } from './user.entity';
 
 const bdUniqnessErrorCode = '23505';
 

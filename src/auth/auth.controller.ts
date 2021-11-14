@@ -1,8 +1,10 @@
 import { Body, ConflictException, Controller, HttpCode, Post } from '@nestjs/common';
+
+import { UserCreationDto, UserLoginDto } from 'user/dto';
+import { User } from 'user/user.entity';
+import { AppError, ArrErrorCode } from 'utils/appError';
+
 import { AuthService } from './auth.service';
-import { AppError, ArrErrorCode } from 'src/utils/appError';
-import { UserLoginDto, UserCreationDto } from 'src/user/dto';
-import { User } from 'src/user/user.entity';
 
 @Controller('auth')
 export class AuthController {
