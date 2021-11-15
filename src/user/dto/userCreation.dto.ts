@@ -1,4 +1,4 @@
-import { IsString, Length, IsEmail, Matches } from 'class-validator';
+import { IsEmail, IsString, Length, Matches } from 'class-validator';
 
 const passValidationRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 

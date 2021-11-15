@@ -27,17 +27,20 @@ export class UsersRepository extends Repository<User> {
       return await this.save(user);
     } catch (err) {
       if (err instanceof QueryFailedError && err.driverError.code === bdUniqnessErrorCode) {
-        if ((err.driverError as DatabaseError).detail.includes('email')) {
+        const dbErr = err.driverError as DatabaseError;
+
+        if (dbErr.detail?.includes('email')) {
           throw new AppError(ArrErrorCode.email_exist);
         }
-        if ((err.driverError as DatabaseError).detail.includes('name')) {
+        if (dbErr.detail?.includes('name')) {
           throw new AppError(ArrErrorCode.username_exist);
         }
       }
+      throw err;
     }
   }
 
-  async findByNameOrEmail(nameOrEmail: string): Promise<User> {
+  async findByNameOrEmail(nameOrEmail: string): Promise<User | undefined> {
     return await this.findOne({ where: [{ name: nameOrEmail }, { email: nameOrEmail }] });
   }
 }

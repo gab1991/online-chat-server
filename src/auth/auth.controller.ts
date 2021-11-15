@@ -1,4 +1,14 @@
-import { Body, ConflictException, Controller, HttpCode, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  HttpCode,
+  Post,
+  Req,
+  UnauthorizedException,
+  UseInterceptors,
+} from '@nestjs/common';
+import { Request } from 'express';
 
 import { UserCreationDto, UserLoginDto } from 'user/dto';
 import { User } from 'user/user.entity';
@@ -10,6 +20,7 @@ import { AuthCookieIssuer } from './tokenIssuer.interceptor';
 @Controller('auth')
 export class AuthController {
   constructor(private authServie: AuthService) {}
+
   @Post('/signup')
   async signUp(@Body() userCreationDto: UserCreationDto): Promise<void> {
     try {
@@ -28,7 +39,18 @@ export class AuthController {
   @Post('/signin')
   @HttpCode(200)
   @UseInterceptors(AuthCookieIssuer)
-  signIn(@Body() userLoginDto: UserLoginDto): Promise<User> {
-    return this.authServie.signIn(userLoginDto);
+  async signIn(@Body() userLoginDto: UserLoginDto): Promise<User> {
+    const user = await this.authServie.signIn(userLoginDto);
+
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
+
+  @Post('/checkCredentials')
+  checkCredentials(@Req() request: Request): void {
+    console.log(request.cookies);
+    return;
   }
 }
