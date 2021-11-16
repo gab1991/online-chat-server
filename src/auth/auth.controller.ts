@@ -6,10 +6,13 @@ import {
   Post,
   Req,
   UnauthorizedException,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Request } from 'express';
 
+import { RequestWithUser } from './passport/types';
+
+import { JwtAuthGuard } from './passport/jwt.guard';
 import { UserCreationDto, UserLoginDto } from 'user/dto';
 import { User } from 'user/user.entity';
 import { AppError, ArrErrorCode } from 'utils/appError';
@@ -49,8 +52,8 @@ export class AuthController {
   }
 
   @Post('/checkCredentials')
-  checkCredentials(@Req() request: Request): void {
-    console.log(request.cookies);
-    return;
+  @UseGuards(JwtAuthGuard)
+  async checkCredentials(@Req() req: RequestWithUser): Promise<User> {
+    return req.user;
   }
 }

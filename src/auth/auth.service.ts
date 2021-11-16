@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
@@ -10,31 +10,23 @@ import { UsersRepository } from 'user/user.repository';
 export class AuthService {
   constructor(
     @InjectRepository(UsersRepository)
-    private usersRepository: UsersRepository,
-    private jwtService: JwtService
+    private usersRepository: UsersRepository
   ) {}
+
+  private async validatePass(notEncrypted: string, encrypted: string): Promise<boolean> {
+    return await compare(notEncrypted, encrypted);
+  }
 
   async signUp(userCreationDto: UserCreationDto): Promise<void> {
     await this.usersRepository.createUser(userCreationDto);
   }
 
-  async signIn(userLoginDto: UserLoginDto): Promise<User | void> {
+  async signIn(userLoginDto: UserLoginDto): Promise<User | undefined> {
     const { nameOrEmail, password } = userLoginDto;
     const user = await this.usersRepository.findByNameOrEmail(nameOrEmail);
 
-    if (user && (await compare(password, user.password))) {
+    if (user && this.validatePass(password, user.password)) {
       return user;
     }
   }
-
-  // async validateUser(userLoginDto: UserLoginDto): Promise<User> {
-  //   const { nameOrEmail, password } = userLoginDto;
-  //   const user = await this.usersRepository.findByNameOrEmail(nameOrEmail);
-
-  //   if (user && (await compare(password, user.password))) {
-  //     return user;
-  //   }
-
-  //   throw new UnauthorizedException('Credentials are not valid');
-  // }
 }
