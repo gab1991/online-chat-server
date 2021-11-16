@@ -4,14 +4,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { Strategy } from 'passport-jwt';
 
+import { JsonJwtDecoded } from './types';
+
 import { User } from 'user/user.entity';
 import { UsersRepository } from 'user/user.repository';
-
-interface JsonJwtDecoded {
-  _id: number;
-  iat: number;
-  exp: number;
-}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
