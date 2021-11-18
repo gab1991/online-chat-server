@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 
+import { ProfileRepository } from 'profile/profile.repository';
 import { UserCreationDto, UserLoginDto } from 'user/dto';
 import { User } from 'user/user.entity';
 import { UsersRepository } from 'user/user.repository';
@@ -10,7 +10,8 @@ import { UsersRepository } from 'user/user.repository';
 export class AuthService {
   constructor(
     @InjectRepository(UsersRepository)
-    private usersRepository: UsersRepository
+    private usersRepository: UsersRepository,
+    private profileRepository: ProfileRepository
   ) {}
 
   private async validatePass(notEncrypted: string, encrypted: string): Promise<boolean> {
@@ -18,7 +19,8 @@ export class AuthService {
   }
 
   async signUp(userCreationDto: UserCreationDto): Promise<void> {
-    await this.usersRepository.createUser(userCreationDto);
+    const user = await this.usersRepository.createUser(userCreationDto);
+    await this.profileRepository.createProfile(user);
   }
 
   async signIn(userLoginDto: UserLoginDto): Promise<User | undefined> {

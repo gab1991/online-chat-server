@@ -12,14 +12,13 @@ const bdUniqnessErrorCode = '23505';
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
   async createUser(userCreationDto: UserCreationDto): Promise<User> {
-    const { password, name } = userCreationDto;
+    const { password } = userCreationDto;
 
     const salt = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(password, salt);
 
     const user = this.create({
       ...userCreationDto,
-      displayedName: name,
       password: hashPassword,
     });
 

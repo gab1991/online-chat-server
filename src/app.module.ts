@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, typeOrmConfig } from 'configs';
 
+import { ProfileModule } from './profile/profile.module';
 import { AuthModule } from 'auth/auth.module';
-import { User } from 'user/user.entity';
 import { UserModule } from 'user/user.module';
 
 const isProd = process.env.NODE_ENV === 'production';
@@ -18,12 +18,13 @@ const isProd = process.env.NODE_ENV === 'production';
     }),
     TypeOrmModule.forRootAsync({
       useFactory: () => ({
-        entities: [User],
+        entities: [__dirname + '/../**/*.entity.js'],
         ...typeOrmConfig(),
       }),
     }),
     UserModule,
     AuthModule,
+    ProfileModule,
   ],
   controllers: [],
   providers: [],

@@ -19,10 +19,4 @@ export class User {
 
   @CreateDateColumn()
   createdAt: string;
-
-  @Column()
-  displayedName: string;
-
-  @Column({ nullable: true })
-  avatarUrl: string;
 }
