@@ -17,6 +17,6 @@ export class Profile {
   @Column()
   displayedName: string;
 
-  @Column({ nullable: true })
-  avatarUrl: string;
+  @Column({ type: 'varchar', nullable: true })
+  avatarUrl: string | null;
 }

@@ -9,6 +9,7 @@ specifiers:
   '@nestjs/passport': ^8.0.1
   '@nestjs/platform-express': ^8.0.0
   '@nestjs/schematics': ^8.0.0
+  '@nestjs/serve-static': ^2.2.2
   '@nestjs/testing': ^8.0.0
   '@nestjs/typeorm': ^8.0.2
   '@types/bcrypt': ^5.0.0
@@ -54,6 +55,7 @@ dependencies:
   '@nestjs/jwt': 8.0.0_@nestjs+common@8.2.0
   '@nestjs/passport': 8.0.1_a166fff05b338095269159beec26600e
   '@nestjs/platform-express': 8.2.0_3be9f4a5443d29d58a8c4813bc34ec98
+  '@nestjs/serve-static': 2.2.2_3be9f4a5443d29d58a8c4813bc34ec98
   '@nestjs/typeorm': 8.0.2_78ff6e38ad301d7c09d8c146c6c643b4
   bcrypt: 5.0.1
   class-transformer: 0.4.0
@@ -914,6 +916,17 @@ packages:
       pluralize: 8.0.0
       typescript: 4.4.4
     dev: true
+
+  /@nestjs/serve-static/2.2.2_3be9f4a5443d29d58a8c4813bc34ec98:
+    resolution: {integrity: sha512-3Mr+Q/npS3N7iGoF3Wd6Lj9QcjMGxbNrSqupi5cviM0IKrZ1BHl5qekW95rWYNATAVqoTmjGROAq+nKKpuUagQ==}
+    peerDependencies:
+      '@nestjs/common': ^6.0.0 || ^7.0.0 || ^8.0.0
+      '@nestjs/core': ^6.0.0 || ^7.0.0 || ^8.0.0
+    dependencies:
+      '@nestjs/common': 8.2.0_43f93dd897e68fe834a23ddd32fb54cc
+      '@nestjs/core': 8.2.0_4cd843d44b7cc56d7dd061c958134502
+      path-to-regexp: 0.1.7
+    dev: false
 
   /@nestjs/testing/8.2.0_90178e8ba4a00499d43a8ef9e286fb2f:
     resolution: {integrity: sha512-8AIZMuPMZ0zIzuR5iOTZ38zH1CjBhhmwQD/thNhIAANWNYKPEpoqNFzol14hiWWsRUpsV9amgljtTf3hzX6KnA==}

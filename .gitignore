@@ -1,3 +1,5 @@
+#static dir
+/public
 #env vars
 *.env
 # compiled output
