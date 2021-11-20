@@ -3,6 +3,6 @@ export class AvatarGenerator {
     if (!dbUrl) {
       return null;
     }
-    return `http://${host}/upload/avatars/${dbUrl}`;
+    return `http://${host}/public/avatars/${dbUrl}`;
   }
 }

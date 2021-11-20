@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, typeOrmConfig } from 'configs';
 
+import { ChatModule } from './chat/chat.module';
 import { ProfileModule } from './profile/profile.module';
 import { AuthModule } from 'auth/auth.module';
 import { UserModule } from 'user/user.module';
@@ -25,6 +26,7 @@ const isProd = process.env.NODE_ENV === 'production';
     UserModule,
     AuthModule,
     ProfileModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [],
