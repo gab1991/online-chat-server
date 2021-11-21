@@ -1,10 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 
 @Controller('user')
-export class UserController {
-  // constructor() {}
-  // @Get()
-  // get(): {} {
-  //   return { lel: 'user here' };
-  // }
-}
+export class UserController {}

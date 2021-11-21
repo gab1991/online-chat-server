@@ -4,15 +4,13 @@ import {
   Controller,
   HttpCode,
   Post,
-  Req,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Serialize } from 'decorators';
 
-import { RequestWithUser } from './passport/types';
-
+import { AuthCookieIssuer } from './interceptors/authCookieIssuer.interceptor';
 import { JwtAuthGuard } from './passport/jwt.guard';
 import { UserCreationDto, UserLoginDto } from 'modules/user/dto';
 import { UserDto } from 'modules/user/dto/user.dto';
@@ -20,7 +18,7 @@ import { User } from 'modules/user/user.entity';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
 import { AuthService } from './auth.service';
-import { AuthCookieIssuer } from './tokenIssuer.interceptor';
+import { AuthenticatedUser } from './decorators';
 
 @Controller('auth')
 export class AuthController {
@@ -56,7 +54,8 @@ export class AuthController {
 
   @Post('/checkCredentials')
   @UseGuards(JwtAuthGuard)
-  async checkCredentials(@Req() req: RequestWithUser): Promise<User> {
-    return req.user;
+  @Serialize(UserDto)
+  async checkCredentials(@AuthenticatedUser() user: User): Promise<User> {
+    return user;
   }
 }

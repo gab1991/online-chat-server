@@ -10,6 +10,7 @@ import { UsersRepository } from 'modules/user/user.repository';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { AuthCookieIssuer } from './interceptors';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { AuthService } from './auth.service';
     PassportModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, AuthCookieIssuer],
 })
 export class AuthModule {}
