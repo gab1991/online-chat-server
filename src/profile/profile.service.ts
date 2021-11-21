@@ -13,7 +13,7 @@ export class ProfileService {
   async getProfile(getProfieServiceDto: GetProfileServiceDto): Promise<Profile | undefined> {
     const { id, host } = getProfieServiceDto;
 
-    const profile = await this.profileRepository.findOneOrFail(id);
+    const profile = await this.profileRepository.findOneOrFail(id, { relations: ['chats'] });
     profile.avatarUrl = this.avatarGenerator.generateAvatarPath(profile.avatarUrl, host);
 
     return profile;
