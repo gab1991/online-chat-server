@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Chat } from 'chat/chat.entity';
-import { User } from 'user/user.entity';
+import { Chat } from 'modules/chat/chat.entity';
+import { User } from 'modules/user/user.entity';
 
 @Entity()
 export class Profile {

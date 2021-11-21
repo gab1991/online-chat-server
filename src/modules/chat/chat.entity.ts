@@ -11,8 +11,8 @@ import {
 
 import { ChatType } from './types';
 
-import { Message } from 'message/message.entity';
-import { Profile } from 'profile/profile.entity';
+import { Message } from 'modules/message/message.entity';
+import { Profile } from 'modules/profile/profile.entity';
 
 @Entity()
 export class Chat {

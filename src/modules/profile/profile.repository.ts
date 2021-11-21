@@ -1,6 +1,6 @@
 import { EntityRepository, Repository } from 'typeorm';
 
-import { User } from 'user/user.entity';
+import { User } from 'modules/user/user.entity';
 
 import { Profile } from './profile.entity';
 

@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { compare } from 'bcrypt';
 
-import { ProfileRepository } from 'profile/profile.repository';
-import { UserCreationDto, UserLoginDto } from 'user/dto';
-import { User } from 'user/user.entity';
-import { UsersRepository } from 'user/user.repository';
+import { ProfileRepository } from 'modules/profile/profile.repository';
+import { UserCreationDto, UserLoginDto } from 'modules/user/dto';
+import { User } from 'modules/user/user.entity';
+import { UsersRepository } from 'modules/user/user.repository';
 @Injectable()
 export class AuthService {
   constructor(

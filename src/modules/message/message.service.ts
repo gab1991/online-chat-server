@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { ChatsRepository } from 'chat/chat.repository';
+import { ChatsRepository } from 'modules/chat/chat.repository';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
 import { Message } from './message.entity';

@@ -6,8 +6,8 @@ import { Strategy } from 'passport-jwt';
 
 import { JsonJwtDecoded } from './types';
 
-import { User } from 'user/user.entity';
-import { UsersRepository } from 'user/user.repository';
+import { User } from 'modules/user/user.entity';
+import { UsersRepository } from 'modules/user/user.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {

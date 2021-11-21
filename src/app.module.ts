@@ -2,12 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, typeOrmConfig } from 'configs';
-
-import { ChatModule } from './chat/chat.module';
-import { MessageModule } from './message/message.module';
-import { ProfileModule } from './profile/profile.module';
-import { AuthModule } from 'auth/auth.module';
-import { UserModule } from 'user/user.module';
+import { AuthModule, ChatModule, MessageModule, ProfileModule, UserModule } from 'modules';
 
 const isProd = process.env.NODE_ENV === 'production';
 

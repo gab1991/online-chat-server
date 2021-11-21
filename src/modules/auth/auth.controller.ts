@@ -10,14 +10,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { Serialize } from 'decorators';
-import { SerializeInterceptor } from 'interceptors';
 
 import { RequestWithUser } from './passport/types';
 
 import { JwtAuthGuard } from './passport/jwt.guard';
-import { UserCreationDto, UserLoginDto } from 'user/dto';
-import { UserDto } from 'user/dto/user.dto';
-import { User } from 'user/user.entity';
+import { UserCreationDto, UserLoginDto } from 'modules/user/dto';
+import { UserDto } from 'modules/user/dto/user.dto';
+import { User } from 'modules/user/user.entity';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
 import { AuthService } from './auth.service';

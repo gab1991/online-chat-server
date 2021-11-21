@@ -5,8 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig } from 'configs';
 
 import { JwtStrategy } from './passport/jwt.strategy';
-import { ProfileRepository } from 'profile/profile.repository';
-import { UsersRepository } from 'user/user.repository';
+import { ProfileRepository } from 'modules/profile/profile.repository';
+import { UsersRepository } from 'modules/user/user.repository';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';

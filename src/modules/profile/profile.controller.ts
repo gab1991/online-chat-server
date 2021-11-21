@@ -2,7 +2,7 @@ import { Controller, Get, InternalServerErrorException, Param, Req, Res, UseGuar
 import { Request } from 'express';
 
 import { GetProfileParamsDto } from './dto/getProfile.dto';
-import { JwtAuthGuard } from 'auth/passport/jwt.guard';
+import { JwtAuthGuard } from 'modules/auth/passport/jwt.guard';
 
 import { Profile } from './profile.entity';
 import { ProfileService } from './profile.service';
