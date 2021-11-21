@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { Serialize } from 'decorators';
 import { SerializeInterceptor } from 'interceptors';
 
 import { RequestWithUser } from './passport/types';
@@ -43,7 +44,8 @@ export class AuthController {
 
   @Post('/signin')
   @HttpCode(200)
-  @UseInterceptors(AuthCookieIssuer, new SerializeInterceptor(UserDto))
+  @Serialize(UserDto)
+  @UseInterceptors(AuthCookieIssuer)
   async signIn(@Body() userLoginDto: UserLoginDto): Promise<User> {
     const user = await this.authServie.signIn(userLoginDto);
 
