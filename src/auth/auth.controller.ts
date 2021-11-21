@@ -9,11 +9,13 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { SerializeInterceptor } from 'interceptors';
 
 import { RequestWithUser } from './passport/types';
 
 import { JwtAuthGuard } from './passport/jwt.guard';
 import { UserCreationDto, UserLoginDto } from 'user/dto';
+import { UserDto } from 'user/dto/user.dto';
 import { User } from 'user/user.entity';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
@@ -41,7 +43,7 @@ export class AuthController {
 
   @Post('/signin')
   @HttpCode(200)
-  @UseInterceptors(AuthCookieIssuer)
+  @UseInterceptors(AuthCookieIssuer, new SerializeInterceptor(UserDto))
   async signIn(@Body() userLoginDto: UserLoginDto): Promise<User> {
     const user = await this.authServie.signIn(userLoginDto);
 
