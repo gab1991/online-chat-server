@@ -4,12 +4,14 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { ChatType } from './types';
 
+import { Message } from 'message/message.entity';
 import { Profile } from 'profile/profile.entity';
 
 @Entity()
@@ -38,4 +40,7 @@ export class Chat {
   @ManyToMany(() => Profile, (profile) => profile.chats)
   @JoinTable()
   participants: Profile[];
+
+  @OneToMany(() => Message, (message) => message.id)
+  messages: Message[];
 }

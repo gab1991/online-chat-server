@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { AvatarGenerator } from 'services';
 
 import { GetProfileServiceDto } from './dto/getProfile.dto';
@@ -8,7 +9,10 @@ import { ProfileRepository } from './profile.repository';
 
 @Injectable()
 export class ProfileService {
-  constructor(private profileRepository: ProfileRepository, private avatarGenerator: AvatarGenerator) {}
+  constructor(
+    @InjectRepository(ProfileRepository) private profileRepository: ProfileRepository,
+    private avatarGenerator: AvatarGenerator
+  ) {}
 
   async getProfile(getProfieServiceDto: GetProfileServiceDto): Promise<Profile | undefined> {
     const { id, host } = getProfieServiceDto;

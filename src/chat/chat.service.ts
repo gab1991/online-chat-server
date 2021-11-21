@@ -10,7 +10,7 @@ import { ChatsRepository } from './chat.repository';
 
 @Injectable()
 export class ChatService {
-  constructor(@InjectRepository(Chat) private chatRepository: ChatsRepository) {}
+  constructor(@InjectRepository(ChatsRepository) private chatRepository: ChatsRepository) {}
 
   createPrivate(createPrivateChatDto: CreatePrivateChatDto): Promise<Chat> {
     const { creatorId, participants } = createPrivateChatDto;

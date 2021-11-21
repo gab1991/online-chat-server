@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { Chat } from './chat.entity';
+import { ChatsRepository } from './chat.repository';
 import { ChatService } from './chat.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Chat])],
+  imports: [TypeOrmModule.forFeature([ChatsRepository])],
   providers: [ChatService],
 })
 export class ChatModule {}
