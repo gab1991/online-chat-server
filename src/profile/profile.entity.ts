@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Chat } from 'chat/chat.entity';
 import { User } from 'user/user.entity';
@@ -21,6 +21,6 @@ export class Profile {
   @Column({ type: 'varchar', nullable: true })
   avatarUrl: string | null;
 
-  @OneToMany(() => Chat, (chat) => chat.profile)
+  @ManyToMany(() => Chat, (chat) => chat.participants)
   chats: Chat[];
 }

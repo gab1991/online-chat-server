@@ -11,6 +11,7 @@ export class AuthService {
   constructor(
     @InjectRepository(UsersRepository)
     private usersRepository: UsersRepository,
+    @InjectRepository(ProfileRepository)
     private profileRepository: ProfileRepository
   ) {}
 

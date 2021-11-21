@@ -2,8 +2,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -17,11 +17,11 @@ export class Chat {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ nullable: true, type: 'varchar' })
   title: string;
 
   @Column()
-  types: ChatType;
+  type: ChatType;
 
   @Column()
   creatorId: number;
@@ -35,7 +35,7 @@ export class Chat {
   @UpdateDateColumn()
   updatedAt: string;
 
-  @ManyToOne(() => Profile, (profile) => profile.chats)
-  @JoinColumn()
-  profile: Profile;
+  @ManyToMany(() => Profile, (profile) => profile.chats)
+  @JoinTable()
+  participants: Profile[];
 }
