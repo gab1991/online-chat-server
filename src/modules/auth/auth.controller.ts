@@ -25,9 +25,10 @@ export class AuthController {
   constructor(private authServie: AuthService) {}
 
   @Post('/signup')
-  async signUp(@Body() userCreationDto: UserCreationDto): Promise<void> {
+  @Serialize(UserDto)
+  async signUp(@Body() userCreationDto: UserCreationDto): Promise<User> {
     try {
-      await this.authServie.signUp(userCreationDto);
+      return await this.authServie.signUp(userCreationDto);
     } catch (err) {
       if (err instanceof AppError && err.appErrCode == ArrErrorCode.username_exist) {
         throw new ConflictException(`name ${userCreationDto.name} is already taken`);

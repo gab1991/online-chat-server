@@ -1,8 +1,6 @@
-import * as bcrypt from 'bcrypt';
 import { DatabaseError } from 'pg';
 import { EntityRepository, QueryFailedError, Repository } from 'typeorm';
 
-import { UserCreationDto } from './dto/userCreation.dto';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
 import { User } from './user.entity';
@@ -11,17 +9,7 @@ const bdUniqnessErrorCode = '23505';
 
 @EntityRepository(User)
 export class UsersRepository extends Repository<User> {
-  async createUser(userCreationDto: UserCreationDto): Promise<User> {
-    const { password } = userCreationDto;
-
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(password, salt);
-
-    const user = this.create({
-      ...userCreationDto,
-      password: hashPassword,
-    });
-
+  async saveUserUnique(user: User): Promise<User> {
     try {
       return await this.save(user);
     } catch (err) {

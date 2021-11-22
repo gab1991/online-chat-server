@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { compare } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 import { ProfileRepository } from 'modules/profile/profile.repository';
 import { UserCreationDto, UserLoginDto } from 'modules/user/dto';
 import { User } from 'modules/user/user.entity';
 import { UsersRepository } from 'modules/user/user.repository';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -16,12 +17,26 @@ export class AuthService {
   ) {}
 
   private async validatePass(notEncrypted: string, encrypted: string): Promise<boolean> {
-    return await compare(notEncrypted, encrypted);
+    return await bcrypt.compare(notEncrypted, encrypted);
   }
 
-  async signUp(userCreationDto: UserCreationDto): Promise<void> {
-    const user = await this.usersRepository.createUser(userCreationDto);
-    await this.profileRepository.createProfile(user);
+  async signUp(userCreationDto: UserCreationDto): Promise<User> {
+    const { password } = userCreationDto;
+
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const user = this.usersRepository.create({
+      ...userCreationDto,
+      password: hashPassword,
+    });
+
+    await this.usersRepository.saveUserUnique(user);
+
+    const profile = this.profileRepository.create({ user, displayedName: user.name });
+    await this.profileRepository.save(profile);
+
+    return user;
   }
 
   async signIn(userLoginDto: UserLoginDto): Promise<User | undefined> {
