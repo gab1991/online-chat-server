@@ -5,16 +5,15 @@ import {
   Param,
   Post,
   Req,
-  Res,
+  UnauthorizedException,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { ImgSaver, Serialize } from 'decorators';
 import { Request } from 'express';
 
 import { GetProfileParamsDto } from './dto/getProfile.dto';
+import { ProfileDto } from './dto/profile.dto';
 import { AuthenticatedUser } from 'modules/auth/decorators';
 import { JwtAuthGuard } from 'modules/auth/passport/jwt.guard';
 import { User } from 'modules/user/user.entity';
@@ -40,17 +39,17 @@ export class ProfileController {
 
   @Post(':id/uploadAvatar')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(
-    FileInterceptor('file', {
-      dest: 'public/avatars',
-      fileFilter: (req, file, cb) => {
-        // console.log(file);
-        cb(null, true);
-      },
-    })
-  )
-  uploadAvatar(@UploadedFile() file: Express.Multer.File, @Param() id: string, @AuthenticatedUser() user: User) {
-    console.log(id);
-    console.log(file);
+  @ImgSaver({ dest: 'avatar' })
+  @Serialize(ProfileDto)
+  uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @Param() id: string,
+    @AuthenticatedUser() user: User
+  ): Promise<Profile> {
+    if (Number(id) !== user.id) {
+      throw new UnauthorizedException();
+    }
+
+    return this.profileService.updateAvatarUrl(user.id, file.filename);
   }
 }

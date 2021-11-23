@@ -22,4 +22,11 @@ export class ProfileService {
 
     return profile;
   }
+
+  async updateAvatarUrl(userId: number, avatarPath: string): Promise<Profile> {
+    const profile = await this.profileRepository.findOneOrFail({ where: { user: { id: userId } } });
+    profile.avatarUrl = avatarPath;
+
+    return this.profileRepository.save(profile);
+  }
 }
