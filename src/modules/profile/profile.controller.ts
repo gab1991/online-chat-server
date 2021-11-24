@@ -1,8 +1,10 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UnauthorizedException,
@@ -13,6 +15,7 @@ import { ImgSaver, Serialize } from 'decorators';
 
 import { GetProfileQuery } from './dto/getProfileQuery.dto';
 import { ProfileDto } from './dto/profile.dto';
+import { UpdDispNameDto } from './dto/updateDispName.dto';
 import { AuthenticatedUser } from 'modules/auth/decorators';
 import { JwtAuthGuard } from 'modules/auth/passport/jwt.guard';
 import { User } from 'modules/user/user.entity';
@@ -49,5 +52,21 @@ export class ProfileController {
       throw new UnauthorizedException();
     }
     return await this.profileService.updateAvatarUrl(user.id, file.filename);
+  }
+
+  @Patch(':id/updateDispName')
+  @UseGuards(JwtAuthGuard)
+  @Serialize(ProfileDto)
+  async updateDistplayedName(
+    @Param('id', new ParseIntPipe()) id: number,
+    @AuthenticatedUser() user: User,
+    @Body() updDispNameDto: UpdDispNameDto
+  ): Promise<Profile> {
+    const { displayedName } = updDispNameDto;
+
+    if (id !== user.id) {
+      throw new UnauthorizedException();
+    }
+    return await this.profileService.updateDisplayedName(user.id, displayedName);
   }
 }

@@ -37,4 +37,10 @@ export class ProfileService {
   async getProfiles(getProfilesQuery: GetProfileQuery): Promise<Profile[]> {
     return this.profileRepository.getProfilesByQuery(getProfilesQuery);
   }
+
+  async updateDisplayedName(userId: number, displayedName: string): Promise<Profile> {
+    const profile = await this.profileRepository.findOneOrFail({ where: { user: { id: userId } } });
+    profile.displayedName = displayedName;
+    return await this.profileRepository.save(profile);
+  }
 }

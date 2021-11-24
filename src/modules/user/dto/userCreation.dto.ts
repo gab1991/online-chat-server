@@ -3,7 +3,7 @@ import { IsEmail, IsString, Length, Matches } from 'class-validator';
 const passValidationRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
 
 export class UserCreationDto {
-  @Length(4)
+  @Length(4, 16)
   @IsString()
   name: string;
 
