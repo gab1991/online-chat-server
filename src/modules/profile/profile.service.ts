@@ -1,24 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AvatarGenerator } from 'services';
-
-import { GetProfileServiceDto } from './dto/getProfile.dto';
 
 import { Profile } from './profile.entity';
 import { ProfileRepository } from './profile.repository';
 
 @Injectable()
 export class ProfileService {
-  constructor(
-    @InjectRepository(ProfileRepository) private profileRepository: ProfileRepository,
-    private avatarGenerator: AvatarGenerator
-  ) {}
+  constructor(@InjectRepository(ProfileRepository) private profileRepository: ProfileRepository) {}
 
-  async getProfile(getProfieServiceDto: GetProfileServiceDto): Promise<Profile | undefined> {
-    const { id, host } = getProfieServiceDto;
-
+  async getProfile(id: number): Promise<Profile | undefined> {
     const profile = await this.profileRepository.findOneOrFail(id, { relations: ['chats'] });
-    profile.avatarUrl = this.avatarGenerator.generateAvatarPath(profile.avatarUrl, host);
 
     return profile;
   }
@@ -27,6 +18,6 @@ export class ProfileService {
     const profile = await this.profileRepository.findOneOrFail({ where: { user: { id: userId } } });
     profile.avatarUrl = avatarPath;
 
-    return this.profileRepository.save(profile);
+    return await this.profileRepository.save(profile);
   }
 }

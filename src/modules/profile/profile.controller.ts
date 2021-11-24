@@ -1,18 +1,15 @@
 import {
   Controller,
   Get,
-  InternalServerErrorException,
   Param,
+  ParseIntPipe,
   Post,
-  Req,
   UnauthorizedException,
   UploadedFile,
   UseGuards,
 } from '@nestjs/common';
 import { ImgSaver, Serialize } from 'decorators';
-import { Request } from 'express';
 
-import { GetProfileParamsDto } from './dto/getProfile.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { AuthenticatedUser } from 'modules/auth/decorators';
 import { JwtAuthGuard } from 'modules/auth/passport/jwt.guard';
@@ -27,29 +24,22 @@ export class ProfileController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  getProfile(@Req() req: Request, @Param() getProfileParamsDto: GetProfileParamsDto): Promise<Profile | undefined> {
-    const host = req.get('host');
-
-    if (!host) {
-      throw new InternalServerErrorException();
-    }
-
-    return this.profileService.getProfile({ ...getProfileParamsDto, host });
+  getProfile(@Param('id', new ParseIntPipe()) id: number): Promise<Profile | undefined> {
+    return this.profileService.getProfile(id);
   }
 
   @Post(':id/uploadAvatar')
   @UseGuards(JwtAuthGuard)
-  @ImgSaver({ dest: 'avatar' })
+  @ImgSaver({ dest: 'avatars' })
   @Serialize(ProfileDto)
-  uploadAvatar(
+  async uploadAvatar(
     @UploadedFile() file: Express.Multer.File,
-    @Param() id: string,
+    @Param('id', new ParseIntPipe()) id: number,
     @AuthenticatedUser() user: User
   ): Promise<Profile> {
-    if (Number(id) !== user.id) {
+    if (id !== user.id) {
       throw new UnauthorizedException();
     }
-
-    return this.profileService.updateAvatarUrl(user.id, file.filename);
+    return await this.profileService.updateAvatarUrl(user.id, file.filename);
   }
 }

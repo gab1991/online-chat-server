@@ -10,7 +10,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useStaticAssets(join(__dirname, '..', 'public'), { index: false, prefix: '/public' });
+  app.useStaticAssets(join(__dirname, '../public/avatars'), { index: false, prefix: '/avatars' });
   app.use(cookieParser());
 
   await app.listen(8000);
