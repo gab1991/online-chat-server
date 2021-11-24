@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { join } from 'path';
 import { FileSystem } from 'services';
 
+import { GetProfileQuery } from './dto/getProfileQuery.dto';
+
 import { Profile } from './profile.entity';
 import { ProfileRepository } from './profile.repository';
 
@@ -30,5 +32,9 @@ export class ProfileService {
     profile.avatarUrl = avatarPath;
 
     return await this.profileRepository.save(profile);
+  }
+
+  async getProfiles(getProfilesQuery: GetProfileQuery): Promise<Profile[]> {
+    return this.profileRepository.getProfilesByQuery(getProfilesQuery);
   }
 }
