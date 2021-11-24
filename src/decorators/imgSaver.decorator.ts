@@ -4,8 +4,6 @@ import { randomBytes } from 'crypto';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 
-import { RequestWithUser } from 'modules/auth/passport/types';
-
 const ACCEPTABLE_IMG_TYPES = ['image/jpeg', 'image/png'];
 const MAX_SIZE_BYTES = 3 * 1024 * 1024;
 
@@ -21,8 +19,8 @@ export const ImgSaver = (props: IImgSaverProps): MethodDecorator & ClassDecorato
     FileInterceptor(fieldName, {
       storage: diskStorage({
         destination: `public/${dest}`,
-        filename: (req: RequestWithUser, file, cb) => {
-          const fileName = `${req.user.id}_${randomBytes(10).toString('hex')}${extname(file.originalname)}`;
+        filename: (req, file, cb) => {
+          const fileName = `${randomBytes(10).toString('hex')}${extname(file.originalname)}`;
           cb(null, fileName);
         },
       }),
