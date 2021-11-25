@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, typeOrmConfig } from 'configs';
+import { isProd } from 'main';
 import { AuthModule, ChatModule, MessageModule, ProfileModule, UserModule } from 'modules';
 
-const isProd = process.env.NODE_ENV === 'production';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ const isProd = process.env.NODE_ENV === 'production';
     ProfileModule,
     ChatModule,
     MessageModule,
+    EventsModule,
   ],
   controllers: [],
   providers: [],

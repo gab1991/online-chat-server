@@ -6,8 +6,10 @@ import { join } from 'path';
 
 import { AppModule } from './app.module';
 
+export const isProd = process.env.NODE_ENV === 'production';
+
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: !isProd });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useStaticAssets(join(__dirname, '../public/avatars'), { index: false, prefix: '/avatars' });

@@ -50,13 +50,7 @@ function initialization(server) {
         // adding lastSeenMsgId
         const lastIdResp = await query(queries.message.lastInsert());
         const lastInsertedMsgId = lastIdResp[0]['last_insert_id()'];
-        await query(
-          queries.lastSeenMsgList.setLastSeenMsg(
-            chatID,
-            user_id,
-            lastInsertedMsgId
-          )
-        );
+        await query(queries.lastSeenMsgList.setLastSeenMsg(chatID, user_id, lastInsertedMsgId));
         // commit transaction
         await query(queries.transaction.commit());
 
@@ -97,43 +91,23 @@ function initialization(server) {
     socket.on('markMsgAsRead', async (data) => {
       try {
         const { userId, chatID } = data;
-        const response = await query(
-          queries.message.getLastMsgIdInConversation(chatID)
-        );
+        const response = await query(queries.message.getLastMsgIdInConversation(chatID));
         const lastMsgInConversation = response[0].id || 0;
 
         // get last msg in this chat
-        const [lastMsgInChatSqlRes] = await query(
-          queries.message.getLastMsgIdInConversation(chatID)
-        );
+        const [lastMsgInChatSqlRes] = await query(queries.message.getLastMsgIdInConversation(chatID));
         // if there is no a single message
         if (!lastMsgInChatSqlRes || !lastMsgInChatSqlRes.id) return;
 
         // checking for existing lastSeen
         const [currentLastSeen] = await query(
-          queries.lastSeenMsgList.getLastSeenMsg(
-            chatID,
-            userId,
-            lastMsgInConversation
-          )
+          queries.lastSeenMsgList.getLastSeenMsg(chatID, userId, lastMsgInConversation)
         );
 
         if (currentLastSeen) {
-          await query(
-            queries.lastSeenMsgList.setLastSeenMsg(
-              chatID,
-              userId,
-              lastMsgInConversation
-            )
-          );
+          await query(queries.lastSeenMsgList.setLastSeenMsg(chatID, userId, lastMsgInConversation));
         } else {
-          await query(
-            queries.lastSeenMsgList.insertLastSeenMsg(
-              chatID,
-              userId,
-              lastMsgInConversation
-            )
-          );
+          await query(queries.lastSeenMsgList.insertLastSeenMsg(chatID, userId, lastMsgInConversation));
         }
         // sending response to listener
 
@@ -157,17 +131,12 @@ function initialization(server) {
 
 async function getUsersWithoutChat(chatID) {
   try {
-    const chatParticipantsArr = await query(
-      queries.participant.getParticipantsByChatID(chatID)
-    );
+    const chatParticipantsArr = await query(queries.participant.getParticipantsByChatID(chatID));
 
     // check if all the users have this chat now;
     const usersWithoNoChat = [];
     for (let user of chatParticipantsArr) {
-      if (
-        onlineUsers[user.profile_id] &&
-        !onlineUsers[user.profile_id].conversations[chatID]
-      ) {
+      if (onlineUsers[user.profile_id] && !onlineUsers[user.profile_id].conversations[chatID]) {
         usersWithoNoChat.push({
           user_id: user.profile_id,
           socketID: onlineUsers[user.profile_id].socketID,
