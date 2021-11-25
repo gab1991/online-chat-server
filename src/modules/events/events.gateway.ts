@@ -23,10 +23,10 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   }
 
   handleDisconnect(client: any) {
-    console.log('disconnected');
+    // console.log('disconnected');
   }
   handleConnection(client: any, ...args: any[]) {
-    console.log('connected');
+    // console.log('connected');
   }
 
   //Events

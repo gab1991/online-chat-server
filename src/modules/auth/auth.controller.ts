@@ -48,7 +48,7 @@ export class AuthController {
     const user = await this.authServie.signIn(userLoginDto);
 
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('password or username/email is not correct');
     }
     return user;
   }
