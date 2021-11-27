@@ -13,7 +13,7 @@ export class ProfileRepository extends Repository<Profile> {
       builder.andWhere(
         'LOWER(p.displayedName) LIKE LOWER(:displayedName) OR LOWER(u.name) LIKE LOWER(:displayedName)',
         {
-          displayedName: `${name}%`,
+          displayedName: `%${name}%`,
         }
       );
     }

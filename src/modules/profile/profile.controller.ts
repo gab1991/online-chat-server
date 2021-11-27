@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -13,6 +14,9 @@ import {
 } from '@nestjs/common';
 import { ImgSaver, Serialize } from 'decorators';
 
+import { DetailedProfile } from './types';
+
+import { DetailedProfileDto } from './dto/detailedProfile.dto';
 import { GetProfileQuery } from './dto/getProfileQuery.dto';
 import { ProfileDto } from './dto/profile.dto';
 import { UpdDispNameDto } from './dto/updateDispName.dto';
@@ -27,6 +31,21 @@ import { ProfileService } from './profile.service';
 export class ProfileController {
   constructor(private profileService: ProfileService) {}
 
+  @Get('/mine')
+  @UseGuards(JwtAuthGuard)
+  @Serialize(DetailedProfileDto)
+  async getCurrentUserProfile(@AuthenticatedUser() user: User): Promise<DetailedProfile> {
+    const profile = await this.profileService.getProfile(user.id);
+
+    if (!profile) {
+      throw new BadRequestException();
+    }
+
+    const detailedProfile: DetailedProfile = { ...profile, username: user.name, email: user.email };
+
+    return detailedProfile;
+  }
+
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   getProfile(@Param('id', new ParseIntPipe()) id: number): Promise<Profile | undefined> {
@@ -34,6 +53,7 @@ export class ProfileController {
   }
 
   @Get('')
+  @Serialize(ProfileDto)
   @UseGuards(JwtAuthGuard)
   getProfiles(@Query() getProfilesQuery: GetProfileQuery): Promise<Profile[]> {
     return this.profileService.getProfiles(getProfilesQuery);
