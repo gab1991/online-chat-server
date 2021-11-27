@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { join } from 'path';
 import { FileSystem } from 'services';
+import { FindOneOptions } from 'typeorm';
 
 import { GetProfileQuery } from './dto/getProfileQuery.dto';
 
@@ -21,8 +22,13 @@ export class ProfileService {
     return profile;
   }
 
+  async getDetailedProfile(id: number, options?: FindOneOptions<Profile>): Promise<Profile> {
+    return this.profileRepository.findOneOrFail(id, { relations: ['chats', 'user'], ...options });
+  }
+
   async updateAvatarUrl(userId: number, avatarPath: string): Promise<Profile> {
-    const profile = await this.profileRepository.findOneOrFail({ where: { user: { id: userId } } });
+    const profile = await this.getDetailedProfile(userId);
+
     const prevAvatar = profile.avatarUrl;
 
     if (prevAvatar) {
@@ -39,7 +45,7 @@ export class ProfileService {
   }
 
   async updateDisplayedName(userId: number, displayedName: string): Promise<Profile> {
-    const profile = await this.profileRepository.findOneOrFail({ where: { user: { id: userId } } });
+    const profile = await this.getDetailedProfile(userId, { where: { user: { id: userId } } });
     profile.displayedName = displayedName;
     return await this.profileRepository.save(profile);
   }

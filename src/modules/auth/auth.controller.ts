@@ -26,6 +26,7 @@ export class AuthController {
 
   @Post('/signup')
   @Serialize(UserDto)
+  @UseInterceptors(AuthCookieIssuer)
   async signUp(@Body() userCreationDto: UserCreationDto): Promise<User> {
     try {
       return await this.authServie.signUp(userCreationDto);

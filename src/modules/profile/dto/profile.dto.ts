@@ -6,15 +6,15 @@ export class ProfileDto {
   @Expose()
   id: number;
 
+  @Expose()
+  displayedName: string;
+
   @Transform((params: { obj: Profile }) => {
     const { obj } = params;
     return obj.user.name;
   })
   @Expose()
   username: string;
-
-  @Expose()
-  displayedName: string;
 
   @Expose()
   avatarUrl: string | null;

@@ -14,8 +14,6 @@ import {
 } from '@nestjs/common';
 import { ImgSaver, Serialize } from 'decorators';
 
-import { DetailedProfile } from './types';
-
 import { DetailedProfileDto } from './dto/detailedProfile.dto';
 import { GetProfileQuery } from './dto/getProfileQuery.dto';
 import { ProfileDto } from './dto/profile.dto';
@@ -34,16 +32,14 @@ export class ProfileController {
   @Get('/mine')
   @UseGuards(JwtAuthGuard)
   @Serialize(DetailedProfileDto)
-  async getCurrentUserProfile(@AuthenticatedUser() user: User): Promise<DetailedProfile> {
-    const profile = await this.profileService.getProfile(user.id);
+  async getCurrentUserProfile(@AuthenticatedUser() user: User): Promise<Profile> {
+    const profile = await this.profileService.getDetailedProfile(user.id);
 
     if (!profile) {
       throw new BadRequestException();
     }
 
-    const detailedProfile: DetailedProfile = { ...profile, username: user.name, email: user.email };
-
-    return detailedProfile;
+    return profile;
   }
 
   @Get(':id')
@@ -62,7 +58,7 @@ export class ProfileController {
   @Post(':id/uploadAvatar')
   @UseGuards(JwtAuthGuard)
   @ImgSaver({ dest: 'avatars' })
-  @Serialize(ProfileDto)
+  @Serialize(DetailedProfileDto)
   async uploadAvatar(
     @UploadedFile() file: Express.Multer.File,
     @Param('id', new ParseIntPipe()) id: number,
@@ -76,7 +72,7 @@ export class ProfileController {
 
   @Patch(':id/updateDispName')
   @UseGuards(JwtAuthGuard)
-  @Serialize(ProfileDto)
+  @Serialize(DetailedProfileDto)
   async updateDistplayedName(
     @Param('id', new ParseIntPipe()) id: number,
     @AuthenticatedUser() user: User,

@@ -1,20 +1,15 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
+import { Profile } from '../profile.entity';
 import { Chat } from 'modules/chat/chat.entity';
 
-export class DetailedProfileDto {
-  @Expose()
-  id: number;
+import { ProfileDto } from './profile.dto';
 
-  @Expose()
-  displayedName: string;
-
-  @Expose()
-  avatarUrl: string | null;
-
-  @Expose()
-  username: string;
-
+export class DetailedProfileDto extends ProfileDto {
+  @Transform((params: { obj: Profile }) => {
+    const { obj } = params;
+    return obj.user.email;
+  })
   @Expose()
   email: string;
 

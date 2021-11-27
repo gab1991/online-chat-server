@@ -19,7 +19,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   afterInit(server: Server) {
     // console.log('web socket listener is up');
     this.loger.log('EventsGateway is running');
-    console.log(server);
+    // console.log(server);
   }
 
   handleDisconnect(client: any) {
@@ -32,6 +32,6 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
   //Events
   @SubscribeMessage('message')
   handleMessage(socket: Socket, payload: string) {
-    console.log('message');
+    // console.log('message');
   }
 }
