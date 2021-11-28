@@ -1,7 +1,7 @@
-import { Expose, Transform } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 
 import { Profile } from '../profile.entity';
-import { Chat } from 'modules/chat/chat.entity';
+import { ChatDto } from 'modules/chat/dto/chat.dto';
 
 import { ProfileDto } from './profile.dto';
 
@@ -13,6 +13,7 @@ export class DetailedProfileDto extends ProfileDto {
   @Expose()
   email: string;
 
+  @Type(() => ChatDto)
   @Expose()
-  chats: Chat[];
+  chats: ChatDto[];
 }
