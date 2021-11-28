@@ -8,7 +8,7 @@ export class Profile {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => User)
+  @OneToOne(() => User, (user) => user.profile)
   @JoinColumn()
   user: User;
 

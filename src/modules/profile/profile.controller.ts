@@ -64,10 +64,10 @@ export class ProfileController {
     @Param('id', new ParseIntPipe()) id: number,
     @AuthenticatedUser() user: User
   ): Promise<Profile> {
-    if (id !== user.id) {
+    if (id !== user.profile.id) {
       throw new UnauthorizedException();
     }
-    return await this.profileService.updateAvatarUrl(user.id, file.filename);
+    return await this.profileService.updateAvatarUrl(user.profile.id, file.filename);
   }
 
   @Patch(':id/updateDispName')
@@ -80,9 +80,9 @@ export class ProfileController {
   ): Promise<Profile> {
     const { displayedName } = updDispNameDto;
 
-    if (id !== user.id) {
+    if (id !== user.profile.id) {
       throw new UnauthorizedException();
     }
-    return await this.profileService.updateDisplayedName(user.id, displayedName);
+    return await this.profileService.updateDisplayedName(user.profile.id, displayedName);
   }
 }

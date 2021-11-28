@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(decodedJWT: JsonJwtDecoded): Promise<User | undefined> {
-    return this.usersRepo.findOne({ where: [{ id: decodedJWT._id }] });
+    return this.usersRepo.findOne({ where: [{ id: decodedJWT._id }], relations: ['profile'] });
   }
 }
 

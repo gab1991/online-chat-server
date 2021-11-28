@@ -1,4 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Profile } from 'modules/profile/profile.entity';
 
 @Entity()
 export class User {
@@ -14,8 +16,8 @@ export class User {
   @Column()
   password: string;
 
-  // @Column({ nullable: true })
-  // status: string;
+  @OneToOne(() => Profile, (profile) => profile.user)
+  profile: Profile;
 
   @CreateDateColumn()
   createdAt: string;

@@ -28,16 +28,13 @@ export class Chat {
   @Column()
   creatorId: number;
 
-  @Column()
-  channelId: number;
-
   @CreateDateColumn()
   createdAt: string;
 
   @UpdateDateColumn()
   updatedAt: string;
 
-  @ManyToMany(() => Profile, (profile) => profile.chats)
+  @ManyToMany(() => Profile, (profile) => profile.chats, { cascade: true })
   @JoinTable()
   participants: Profile[];
 

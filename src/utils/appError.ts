@@ -2,6 +2,7 @@ export enum ArrErrorCode {
   'username_exist',
   'email_exist',
   'no_entity_found',
+  'private_chat_same_participants',
 }
 
 export class AppError extends Error {

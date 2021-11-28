@@ -26,8 +26,8 @@ export class ProfileService {
     return this.profileRepository.findOneOrFail(id, { relations: ['chats', 'user'], ...options });
   }
 
-  async updateAvatarUrl(userId: number, avatarPath: string): Promise<Profile> {
-    const profile = await this.getDetailedProfile(userId);
+  async updateAvatarUrl(id: number, avatarPath: string): Promise<Profile> {
+    const profile = await this.getDetailedProfile(id);
 
     const prevAvatar = profile.avatarUrl;
 
@@ -44,9 +44,11 @@ export class ProfileService {
     return this.profileRepository.getProfilesByQuery(getProfilesQuery);
   }
 
-  async updateDisplayedName(userId: number, displayedName: string): Promise<Profile> {
-    const profile = await this.getDetailedProfile(userId, { where: { user: { id: userId } } });
+  async updateDisplayedName(id: number, displayedName: string): Promise<Profile> {
+    const profile = await this.getDetailedProfile(id);
+
     profile.displayedName = displayedName;
+
     return await this.profileRepository.save(profile);
   }
 }
