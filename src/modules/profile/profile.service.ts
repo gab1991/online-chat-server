@@ -7,7 +7,7 @@ import { FindOneOptions } from 'typeorm';
 import { GetProfileQuery } from './dto/getProfileQuery.dto';
 
 import { Profile } from './profile.entity';
-import { ProfileRepository } from './profile.repository';
+import { GetProfileByQueryParams, ProfileRepository } from './profile.repository';
 
 @Injectable()
 export class ProfileService {
@@ -40,8 +40,13 @@ export class ProfileService {
     return await this.profileRepository.save(profile);
   }
 
-  async getProfiles(getProfilesQuery: GetProfileQuery): Promise<Profile[]> {
-    return this.profileRepository.getProfilesByQuery(getProfilesQuery);
+  async getProfiles(getProfilesQuery: GetProfileQuery, options?: { exceptIds: number[] }): Promise<Profile[]> {
+    const params: GetProfileByQueryParams = {
+      name: getProfilesQuery.name,
+      ignoredIds: options?.exceptIds,
+    };
+
+    return this.profileRepository.getProfilesByQuery(params);
   }
 
   async updateDisplayedName(id: number, displayedName: string): Promise<Profile> {
