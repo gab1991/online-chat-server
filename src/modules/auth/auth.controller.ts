@@ -1,35 +1,42 @@
 import {
+  BadRequestException,
   Body,
   ConflictException,
   Controller,
   HttpCode,
   Post,
   UnauthorizedException,
-  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Serialize } from 'decorators';
 
 import { AuthCookieIssuer } from './interceptors/authCookieIssuer.interceptor';
-import { JwtAuthGuard } from './passport/jwt.guard';
+import { DetailedProfileDto } from 'modules/profile/dto/detailedProfile.dto';
+import { Profile } from 'modules/profile/profile.entity';
+import { ProfileService } from 'modules/profile/profile.service';
 import { UserCreationDto, UserLoginDto } from 'modules/user/dto';
-import { UserDto } from 'modules/user/dto/user.dto';
-import { User } from 'modules/user/user.entity';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
 import { AuthService } from './auth.service';
-import { AuthenticatedUser } from './decorators';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authServie: AuthService) {}
+  constructor(private authServie: AuthService, private profileService: ProfileService) {}
 
   @Post('/signup')
-  @Serialize(UserDto)
+  @Serialize(DetailedProfileDto)
   @UseInterceptors(AuthCookieIssuer)
-  async signUp(@Body() userCreationDto: UserCreationDto): Promise<User> {
+  async signUp(@Body() userCreationDto: UserCreationDto): Promise<any> {
     try {
-      return await this.authServie.signUp(userCreationDto);
+      const { id } = await this.authServie.signUp(userCreationDto);
+
+      const profile = await this.profileService.getDetailedProfile(id);
+
+      if (!profile) {
+        throw new BadRequestException();
+      }
+
+      return profile;
     } catch (err) {
       if (err instanceof AppError && err.appErrCode == ArrErrorCode.username_exist) {
         throw new ConflictException(`name ${userCreationDto.name} is already taken`);
@@ -43,21 +50,20 @@ export class AuthController {
 
   @Post('/signin')
   @HttpCode(200)
-  @Serialize(UserDto)
+  @Serialize(DetailedProfileDto)
   @UseInterceptors(AuthCookieIssuer)
-  async signIn(@Body() userLoginDto: UserLoginDto): Promise<User> {
+  async signIn(@Body() userLoginDto: UserLoginDto): Promise<Profile> {
     const user = await this.authServie.signIn(userLoginDto);
 
     if (!user) {
       throw new UnauthorizedException('password or username/email is not correct');
     }
-    return user;
-  }
 
-  @Post('/checkCredentials')
-  @UseGuards(JwtAuthGuard)
-  @Serialize(UserDto)
-  async checkCredentials(@AuthenticatedUser() user: User): Promise<User> {
-    return user;
+    const profile = await this.profileService.getDetailedProfile(user.profile.id);
+
+    if (!profile) {
+      throw new BadRequestException();
+    }
+    return profile;
   }
 }

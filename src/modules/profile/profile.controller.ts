@@ -33,7 +33,7 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   @Serialize(DetailedProfileDto)
   async getCurrentUserProfile(@AuthenticatedUser() user: User): Promise<Profile> {
-    const profile = await this.profileService.getDetailedProfile(user.id);
+    const profile = await this.profileService.getDetailedProfile(user.profile.id);
 
     if (!profile) {
       throw new BadRequestException();

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 
+import { Profile } from 'modules/profile/profile.entity';
 import { ProfileRepository } from 'modules/profile/profile.repository';
 import { UserCreationDto, UserLoginDto } from 'modules/user/dto';
 import { User } from 'modules/user/user.entity';
@@ -20,7 +21,7 @@ export class AuthService {
     return await bcrypt.compare(notEncrypted, encrypted);
   }
 
-  async signUp(userCreationDto: UserCreationDto): Promise<User> {
+  async signUp(userCreationDto: UserCreationDto): Promise<Profile> {
     const { password } = userCreationDto;
 
     const salt = await bcrypt.genSalt();
@@ -34,9 +35,8 @@ export class AuthService {
     await this.usersRepository.saveUserUnique(user);
 
     const profile = this.profileRepository.create({ user, displayedName: user.name });
-    await this.profileRepository.save(profile);
 
-    return user;
+    return await this.profileRepository.save(profile);
   }
 
   async signIn(userLoginDto: UserLoginDto): Promise<User | undefined> {
