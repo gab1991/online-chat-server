@@ -28,6 +28,6 @@ export class UsersRepository extends Repository<User> {
   }
 
   async findByNameOrEmail(nameOrEmail: string): Promise<User | undefined> {
-    return await this.findOne({ where: [{ name: nameOrEmail }, { email: nameOrEmail }] });
+    return await this.findOne({ where: [{ name: nameOrEmail }, { email: nameOrEmail }], relations: ['profile'] });
   }
 }

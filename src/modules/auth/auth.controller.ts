@@ -3,14 +3,16 @@ import {
   Body,
   ConflictException,
   Controller,
+  Get,
   HttpCode,
   Post,
   UnauthorizedException,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Serialize } from 'decorators';
 
-import { AuthCookieIssuer } from './interceptors/authCookieIssuer.interceptor';
+import { JwtAuthGuard } from './passport/jwt.guard';
 import { DetailedProfileDto } from 'modules/profile/dto/detailedProfile.dto';
 import { Profile } from 'modules/profile/profile.entity';
 import { ProfileService } from 'modules/profile/profile.service';
@@ -18,6 +20,7 @@ import { UserCreationDto, UserLoginDto } from 'modules/user/dto';
 import { AppError, ArrErrorCode } from 'utils/appError';
 
 import { AuthService } from './auth.service';
+import { AuthCookieIssuer, AuthCookieRemover } from './interceptors';
 
 @Controller('auth')
 export class AuthController {
@@ -65,5 +68,13 @@ export class AuthController {
       throw new BadRequestException();
     }
     return profile;
+  }
+
+  @Get('/logout')
+  @HttpCode(204)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(AuthCookieRemover)
+  async logout(): Promise<string> {
+    return 'Logged out';
   }
 }

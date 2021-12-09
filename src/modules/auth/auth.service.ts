@@ -43,7 +43,7 @@ export class AuthService {
     const { nameOrEmail, password } = userLoginDto;
     const user = await this.usersRepository.findByNameOrEmail(nameOrEmail);
 
-    if (user && this.validatePass(password, user.password)) {
+    if (user && (await this.validatePass(password, user.password))) {
       return user;
     }
   }
