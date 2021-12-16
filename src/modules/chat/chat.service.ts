@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
-import { ChatType } from './types';
+import { ChatDetailed, ChatType } from './types';
 
 import { CreatePrivateChatDto } from './dto/createPrivateChat.dto';
 import { ProfileRepository } from 'modules/profile/profile.repository';
@@ -53,5 +53,20 @@ export class ChatService {
     });
 
     return await this.chatRepository.save(chat);
+  }
+
+  async getChatsDetailed(participantId: number): Promise<ChatDetailed[]> {
+    const chats = await this.chatRepository.findChatsByParticipantId(participantId);
+    const detailedChats: ChatDetailed[] = [];
+
+    for (const chat of chats) {
+      if (chat.type === ChatType.private) {
+        const convPartner = chat.participants.find((participant) => participant.id !== participantId);
+
+        detailedChats.push({ avatarUrl: convPartner?.avatarUrl || null, ...chat });
+      }
+    }
+
+    return detailedChats;
   }
 }

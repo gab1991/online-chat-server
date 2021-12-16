@@ -11,7 +11,7 @@ export class ProfileDto {
 
   @Transform((params: { obj: Profile }) => {
     const { obj } = params;
-    // console.log(obj);
+
     return obj.user.name;
   })
   @Expose()

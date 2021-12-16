@@ -1,5 +1,9 @@
 import { BadRequestException, Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
+import { Serialize } from 'decorators';
 
+import { ChatDetailed } from './types';
+
+import { ChatDetailedDto } from './dto/chatDetailed.dto';
 import { EnterPrivateChatDto } from './dto/enterPrivateChat.dto';
 import { AuthenticatedUser } from 'modules/auth/decorators';
 import { JwtAuthGuard } from 'modules/auth/passport/jwt.guard';
@@ -27,8 +31,16 @@ export class ChatController {
     return this.chatService.enterPrivateConversation(currentUserId, participantId);
   }
 
-  @Get('isOnline')
-  isOnline() {
-    return this.onlineService.getAllLists();
+  @Get('')
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Serialize(ChatDetailedDto)
+  async getChatsByParticipant(@AuthenticatedUser() user: User): Promise<ChatDetailed[]> {
+    return await this.chatService.getChatsDetailed(user.profile.id);
   }
+
+  // @Get('isOnline')
+  // isOnline() {
+  //   return this.onlineService.getAllLists();
+  // }
 }

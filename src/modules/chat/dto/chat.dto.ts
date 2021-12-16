@@ -17,6 +17,4 @@ export class ChatDto {
 
   @Expose()
   createdAt: string;
-  @Expose()
-  updatedAt: string;
 }

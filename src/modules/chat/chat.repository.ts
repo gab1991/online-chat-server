@@ -25,4 +25,19 @@ export class ChatsRepository extends Repository<Chat> {
 
     return commonChats;
   }
+
+  async findChatsByParticipantId(participantId: number): Promise<Chat[]> {
+    const chatIdQb = this.createQueryBuilder('c')
+      .select('c.id')
+      .innerJoin('c.participants', 'p')
+      .andWhere('p.id = :participantId', { participantId });
+
+    const chats = await this.createQueryBuilder('chat')
+      .innerJoinAndSelect('chat.participants', 'par')
+      .where('chat.id IN (' + chatIdQb.getQuery() + ')')
+      .setParameters(chatIdQb.getParameters())
+      .getMany();
+
+    return chats;
+  }
 }
