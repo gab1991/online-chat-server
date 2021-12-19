@@ -9,13 +9,5 @@ export class MessageController {
   @Post()
   sendMessage() {
     this.messageService.createMessage(1, 2, 'test');
-    // this.messageService.createMessage(1,23,'sdf')
   }
 }
-
-const a = (id: number) => {
-  return id;
-};
-
-a(1);
-0;
