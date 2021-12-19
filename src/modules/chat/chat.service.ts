@@ -63,7 +63,11 @@ export class ChatService {
       if (chat.type === ChatType.private) {
         const convPartner = chat.participants.find((participant) => participant.id !== participantId);
 
-        detailedChats.push({ avatarUrl: convPartner?.avatarUrl || null, ...chat });
+        detailedChats.push({
+          ...chat,
+          avatarUrl: convPartner?.avatarUrl || null,
+          title: convPartner?.displayedName || null,
+        });
       }
     }
 

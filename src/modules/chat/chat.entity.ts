@@ -20,7 +20,7 @@ export class Chat {
   id: number;
 
   @Column({ nullable: true, type: 'varchar' })
-  title: string;
+  title: string | null;
 
   @Column()
   type: ChatType;
