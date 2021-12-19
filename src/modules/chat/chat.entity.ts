@@ -38,6 +38,6 @@ export class Chat {
   @JoinTable()
   participants: Profile[];
 
-  @OneToMany(() => Message, (message) => message.id)
+  @OneToMany(() => Message, (message) => message.chat)
   messages: Message[];
 }

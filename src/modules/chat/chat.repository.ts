@@ -34,6 +34,7 @@ export class ChatsRepository extends Repository<Chat> {
 
     const chats = await this.createQueryBuilder('chat')
       .innerJoinAndSelect('chat.participants', 'par')
+      .leftJoinAndSelect('chat.messages', 'mes')
       .where('chat.id IN (' + chatIdQb.getQuery() + ')')
       .setParameters(chatIdQb.getParameters())
       .getMany();
