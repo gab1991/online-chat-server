@@ -7,6 +7,9 @@ export class Message {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column()
+  chatId: number;
+
   @ManyToOne(() => Chat, (chat) => chat.messages)
   chat: Chat;
 

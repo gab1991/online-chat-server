@@ -25,6 +25,7 @@ export class MessageService {
       chat,
       message: messageTxt,
       senderId,
+      chatId: chat.id,
     });
 
     return this.messageReoisitory.save(message);

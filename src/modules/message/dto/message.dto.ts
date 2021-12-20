@@ -12,4 +12,7 @@ export class MessageDto {
 
   @Expose()
   createdAt: string;
+
+  @Expose()
+  chatId: number;
 }
