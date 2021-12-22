@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, UsePipes, ValidationPipe } from '@nestjs/common';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -6,19 +6,20 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  WsResponse,
 } from '@nestjs/websockets';
 import { Serialize } from 'decorators';
 import { Server, Socket } from 'socket.io';
 
 import { ClientEvents, ServerEvents } from './types';
 
+import { JoinChatsDto } from './dto/joinChats.dto';
 import { SendMessageToServerDto } from './dto/sendMessageToServer.dto';
 import { MessageDto } from 'modules/message/dto/message.dto';
 import { Message } from 'modules/message/message.entity';
 import { MessageService } from 'modules/message/message.service';
 
 @WebSocketGateway({ cors: true })
+@UsePipes(new ValidationPipe())
 export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
@@ -38,13 +39,20 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     console.log('connected', client.id);
   }
 
+  @SubscribeMessage(ServerEvents.joinChats)
+  joinChats(socket: Socket, joinChatsDto: JoinChatsDto): void {
+    socket.join(joinChatsDto.chatIds.map((id) => id.toString()));
+
+    console.log('all rooms', this.server.sockets.adapter.rooms);
+  }
+
   //Events
   @SubscribeMessage(ServerEvents.sendMessageToServer)
   @Serialize(MessageDto)
-  async handleMessageSending(socket: Socket, sendMessageDto: SendMessageToServerDto): Promise<WsResponse<Message>> {
+  async handleMessageSending(socket: Socket, sendMessageDto: SendMessageToServerDto): Promise<void> {
     const { chatId, message, senderId } = sendMessageDto;
     const savedMsg = await this.messageService.createMessage(chatId, senderId, message);
 
-    return { event: ClientEvents.sendMessageToClient, data: savedMsg };
+    this.server.to(chatId.toString()).emit(ClientEvents.sendMessageToClient, savedMsg);
   }
 }
