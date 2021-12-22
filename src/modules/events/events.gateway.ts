@@ -41,7 +41,9 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
 
   @SubscribeMessage(ServerEvents.joinChats)
   joinChats(socket: Socket, joinChatsDto: JoinChatsDto): void {
-    socket.join(joinChatsDto.chatIds.map((id) => id.toString()));
+    const chatTextIds = joinChatsDto.chatIds.map((id) => id.toString());
+
+    socket.join(chatTextIds);
 
     console.log('all rooms', this.server.sockets.adapter.rooms);
   }
