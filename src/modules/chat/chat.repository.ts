@@ -18,7 +18,7 @@ export class ChatsRepository extends Repository<Chat> {
       .innerJoinAndSelect('c.participants', 'p')
       .andWhere('c.type = :chatType', { chatType: ChatType.private })
       .andWhere('p.id IN (:...participantIds)', { participantIds })
-      .select('c.id , COUNT(*)')
+      .select('c.id c.m, COUNT(*)')
       .groupBy('c.id')
       .having('COUNT(*) > 1')
       .getRawMany();
@@ -33,6 +33,7 @@ export class ChatsRepository extends Repository<Chat> {
       .andWhere('p.id = :participantId', { participantId });
 
     const chats = await this.createQueryBuilder('chat')
+      .innerJoin('chat.messages', 'm')
       .innerJoinAndSelect('chat.participants', 'par')
       .leftJoinAndSelect('chat.messages', 'mes')
       .where('chat.id IN (' + chatIdQb.getQuery() + ')')
