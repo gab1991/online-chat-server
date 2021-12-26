@@ -38,9 +38,4 @@ export class ChatController {
   async getChatsByParticipant(@AuthenticatedUser() user: User): Promise<ChatDetailed[]> {
     return await this.chatService.getChatsDetailed(user.profile.id);
   }
-
-  // @Get('isOnline')
-  // isOnline() {
-  //   return this.onlineService.getAllLists();
-  // }
 }

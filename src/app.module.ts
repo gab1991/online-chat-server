@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, typeOrmConfig } from 'configs';
 import { isProd } from 'main';
-import { AuthModule, ChatModule, MessageModule, ProfileModule, UserModule } from 'modules';
+import { AuthModule, ChatModule, LastSeenMsgModule, MessageModule, ProfileModule, UserModule } from 'modules';
 
 import { EventsModule } from './modules/events/events.module';
 
@@ -26,6 +26,7 @@ import { EventsModule } from './modules/events/events.module';
     ChatModule,
     MessageModule,
     EventsModule,
+    LastSeenMsgModule,
   ],
   controllers: [],
   providers: [],
