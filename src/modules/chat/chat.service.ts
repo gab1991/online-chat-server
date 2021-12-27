@@ -38,7 +38,6 @@ export class ChatService {
     }
 
     const [commonChat] = await this.chatRepository.findCommonChats([curUserProfileId, participantProfileId]);
-    console.log(commonChat);
 
     if (commonChat) {
       const chat = await this.chatRepository.findOneOrFail(commonChat.id, { relations: ['messages', 'participants'] });

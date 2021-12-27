@@ -11,11 +11,10 @@ import { User } from 'modules/user/user.entity';
 
 import { Chat } from './chat.entity';
 import { ChatService } from './chat.service';
-import { OnlineService } from './online.service';
 
 @Controller('chats')
 export class ChatController {
-  constructor(private chatService: ChatService, private onlineService: OnlineService) {}
+  constructor(private chatService: ChatService) {}
 
   @Post('/enterChat')
   @HttpCode(200)

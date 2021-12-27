@@ -55,6 +55,7 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     const { chatId, message, senderId } = sendMessageDto;
     const savedMsg = await this.messageService.createMessage(chatId, senderId, message);
 
+    // this.server.sockets.
     this.server.to(chatId.toString()).emit(ClientEvents.sendMessageToClient, savedMsg);
   }
 }
