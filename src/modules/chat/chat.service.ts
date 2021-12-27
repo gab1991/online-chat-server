@@ -29,7 +29,7 @@ export class ChatService {
     return this.chatRepository.save(privateChat);
   }
 
-  async enterPrivateConversation(curUserProfileId: number, participantProfileId: number): Promise<Chat> {
+  async enterPrivateConversation(curUserProfileId: number, participantProfileId: number): Promise<ChatDetailed> {
     if (curUserProfileId === participantProfileId) {
       throw new AppError(
         ArrErrorCode.private_chat_same_participants,
@@ -38,9 +38,11 @@ export class ChatService {
     }
 
     const [commonChat] = await this.chatRepository.findCommonChats([curUserProfileId, participantProfileId]);
+    console.log(commonChat);
 
     if (commonChat) {
-      return this.chatRepository.findOneOrFail(commonChat.id);
+      const chat = await this.chatRepository.findOneOrFail(commonChat.id, { relations: ['messages', 'participants'] });
+      return this.makeDetailedPrivateChat(chat, curUserProfileId);
     }
 
     const curUserProfile = await this.profileRepository.findOneOrFail(curUserProfileId);
@@ -50,9 +52,11 @@ export class ChatService {
       participants: [curUserProfile, participantProfile],
       type: ChatType.private,
       creatorId: curUserProfileId,
+      messages: [],
     });
 
-    return await this.chatRepository.save(chat);
+    const savedChat = await this.chatRepository.save(chat);
+    return this.makeDetailedPrivateChat(savedChat, curUserProfileId);
   }
 
   async getChatsDetailed(participantId: number): Promise<ChatDetailed[]> {
@@ -61,16 +65,20 @@ export class ChatService {
 
     for (const chat of chats) {
       if (chat.type === ChatType.private) {
-        const convPartner = chat.participants.find((participant) => participant.id !== participantId);
-
-        detailedChats.push({
-          ...chat,
-          avatarUrl: convPartner?.avatarUrl || null,
-          title: convPartner?.displayedName || null,
-        });
+        detailedChats.push(this.makeDetailedPrivateChat(chat, participantId));
       }
     }
 
     return detailedChats;
+  }
+
+  makeDetailedPrivateChat(chat: Chat, participantId: number): ChatDetailed {
+    const convPartner = chat.participants.find((participant) => participant.id !== participantId);
+    const detailedChat = {
+      ...chat,
+      avatarUrl: convPartner?.avatarUrl || null,
+      title: convPartner?.displayedName || null,
+    };
+    return detailedChat;
   }
 }

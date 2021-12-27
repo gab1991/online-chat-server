@@ -51,8 +51,10 @@ export class ProfileController {
   @Get('')
   @Serialize(ProfileDto)
   @UseGuards(JwtAuthGuard)
-  getProfiles(@Query() getProfilesQuery: GetProfileQuery, @AuthenticatedUser() user: User): Promise<Profile[]> {
-    return this.profileService.getProfiles(getProfilesQuery, { exceptIds: [user.profile.id] });
+  async getProfiles(@Query() getProfilesQuery: GetProfileQuery, @AuthenticatedUser() user: User): Promise<Profile[]> {
+    const profiles = await this.profileService.getProfiles(getProfilesQuery, { exceptIds: [user.profile.id] });
+
+    return profiles;
   }
 
   @Post(':id/uploadAvatar')

@@ -18,7 +18,7 @@ export class ChatsRepository extends Repository<Chat> {
       .innerJoinAndSelect('c.participants', 'p')
       .andWhere('c.type = :chatType', { chatType: ChatType.private })
       .andWhere('p.id IN (:...participantIds)', { participantIds })
-      .select('c.id c.m, COUNT(*)')
+      .select('c.id , COUNT(*)')
       .groupBy('c.id')
       .having('COUNT(*) > 1')
       .getRawMany();

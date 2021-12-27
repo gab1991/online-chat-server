@@ -19,8 +19,9 @@ export class ChatController {
 
   @Post('/enterChat')
   @HttpCode(200)
+  @Serialize(ChatDetailedDto)
   @UseGuards(JwtAuthGuard)
-  enterChat(@Body() enterPrivateChatDto: EnterPrivateChatDto, @AuthenticatedUser() user: User): Promise<Chat> {
+  async enterChat(@Body() enterPrivateChatDto: EnterPrivateChatDto, @AuthenticatedUser() user: User): Promise<Chat> {
     const { participantId } = enterPrivateChatDto;
     const currentUserId = user.profile.id;
 
@@ -28,7 +29,7 @@ export class ChatController {
       throw new BadRequestException('this feature in development');
     }
 
-    return this.chatService.enterPrivateConversation(currentUserId, participantId);
+    return await this.chatService.enterPrivateConversation(currentUserId, participantId);
   }
 
   @Get('')
