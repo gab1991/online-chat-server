@@ -14,7 +14,7 @@ import { ChatsRepository } from './chat.repository';
 export class ChatService {
   constructor(
     @InjectRepository(ChatsRepository) private chatRepository: ChatsRepository,
-    @InjectRepository(ProfileRepository) private profileRepository: ProfileRepository //
+    @InjectRepository(ProfileRepository) private profileRepository: ProfileRepository
   ) {}
 
   createPrivate(createPrivateChatDto: CreatePrivateChatDto): Promise<Chat> {
@@ -29,7 +29,10 @@ export class ChatService {
     return this.chatRepository.save(privateChat);
   }
 
-  async enterPrivateConversation(curUserProfileId: number, participantProfileId: number): Promise<ChatDetailed> {
+  async enterPrivateConversation(
+    curUserProfileId: number,
+    participantProfileId: number
+  ): Promise<ChatDetailed> {
     if (curUserProfileId === participantProfileId) {
       throw new AppError(
         ArrErrorCode.private_chat_same_participants,
@@ -37,10 +40,15 @@ export class ChatService {
       );
     }
 
-    const [commonChat] = await this.chatRepository.findCommonChats([curUserProfileId, participantProfileId]);
+    const [commonChat] = await this.chatRepository.findCommonChats([
+      curUserProfileId,
+      participantProfileId,
+    ]);
 
     if (commonChat) {
-      const chat = await this.chatRepository.findOneOrFail(commonChat.id, { relations: ['messages', 'participants'] });
+      const chat = await this.chatRepository.findOneOrFail(commonChat.id, {
+        relations: ['messages', 'participants'],
+      });
       return this.makeDetailedPrivateChat(chat, curUserProfileId);
     }
 
@@ -79,5 +87,13 @@ export class ChatService {
       title: convPartner?.displayedName || null,
     };
     return detailedChat;
+  }
+
+  async findChatParticipantIds(chatId: number): Promise<number[]> {
+    const chat = await this.chatRepository.findOneOrFail({
+      where: [{ id: chatId }],
+      relations: ['participants'],
+    });
+    return chat.participants.map((participant) => participant.id);
   }
 }

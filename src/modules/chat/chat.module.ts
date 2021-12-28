@@ -11,5 +11,6 @@ import { ChatService } from './chat.service';
   imports: [TypeOrmModule.forFeature([ChatsRepository, ProfileRepository])],
   providers: [ChatService],
   controllers: [ChatController],
+  exports: [ChatService],
 })
 export class ChatModule {}

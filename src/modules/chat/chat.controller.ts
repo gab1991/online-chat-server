@@ -1,4 +1,12 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { Serialize } from 'decorators';
 
 import { ChatDetailed } from './types';
@@ -20,7 +28,10 @@ export class ChatController {
   @HttpCode(200)
   @Serialize(ChatDetailedDto)
   @UseGuards(JwtAuthGuard)
-  async enterChat(@Body() enterPrivateChatDto: EnterPrivateChatDto, @AuthenticatedUser() user: User): Promise<Chat> {
+  async enterChat(
+    @Body() enterPrivateChatDto: EnterPrivateChatDto,
+    @AuthenticatedUser() user: User
+  ): Promise<Chat> {
     const { participantId } = enterPrivateChatDto;
     const currentUserId = user.profile.id;
 
@@ -32,7 +43,6 @@ export class ChatController {
   }
 
   @Get('')
-  @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @Serialize(ChatDetailedDto)
   async getChatsByParticipant(@AuthenticatedUser() user: User): Promise<ChatDetailed[]> {

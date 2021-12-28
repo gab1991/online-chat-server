@@ -14,17 +14,24 @@ import { ClientEvents, ServerEvents } from './types';
 
 import { JoinChatsDto } from './dto/joinChats.dto';
 import { SendMessageToServerDto } from './dto/sendMessageToServer.dto';
+import { SetIsOnlineDto } from './dto/setIsOnline.dto';
+import { ChatService } from 'modules/chat/chat.service';
 import { MessageDto } from 'modules/message/dto/message.dto';
-import { Message } from 'modules/message/message.entity';
 import { MessageService } from 'modules/message/message.service';
 
-@WebSocketGateway({ cors: true })
+import { OnlineService } from './online.service';
+
+@WebSocketGateway({ cors: { origin: ['http://localhost:3000'], credentials: true } })
 @UsePipes(new ValidationPipe())
 export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  constructor(private messageService: MessageService) {}
+  constructor(
+    private messageService: MessageService,
+    private onlineService: OnlineService,
+    private chatService: ChatService
+  ) {}
 
   private loger = new Logger('EventsGateway');
 
@@ -32,11 +39,13 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     this.loger.log('EventsGateway is running');
   }
 
-  handleDisconnect(client: any): void {
-    // console.log('disconnected');
+  handleDisconnect(socket: Socket): void {
+    this.onlineService.setOffline(socket.id);
+    console.log(this.onlineService.getAllLists());
   }
-  handleConnection(client: Socket, ...args: any[]): void {
-    console.log('connected', client.id);
+
+  handleConnection(socket: Socket): void {
+    console.log('connected', socket.id);
   }
 
   @SubscribeMessage(ServerEvents.joinChats)
@@ -44,18 +53,39 @@ export class EventsGateway implements OnGatewayInit, OnGatewayConnection, OnGate
     const chatTextIds = joinChatsDto.chatIds.map((id) => id.toString());
 
     socket.join(chatTextIds);
-
-    console.log('all rooms', this.server.sockets.adapter.rooms);
   }
 
   //Events
   @SubscribeMessage(ServerEvents.sendMessageToServer)
   @Serialize(MessageDto)
-  async handleMessageSending(socket: Socket, sendMessageDto: SendMessageToServerDto): Promise<void> {
+  async handleMessageSending(
+    socket: Socket,
+    sendMessageDto: SendMessageToServerDto
+  ): Promise<void> {
     const { chatId, message, senderId } = sendMessageDto;
-    const savedMsg = await this.messageService.createMessage(chatId, senderId, message);
 
-    // this.server.sockets.
-    this.server.to(chatId.toString()).emit(ClientEvents.sendMessageToClient, savedMsg);
+    const savedMsg = await this.messageService.createMessage(chatId, senderId, message);
+    const chatParticipantsIds = await this.chatService.findChatParticipantIds(chatId);
+
+    const profileToSocketMap = this.onlineService.getReversedActiveSocketMap();
+
+    const usersSockets = chatParticipantsIds.reduce((prev: string[], id) => {
+      const onlineSocket = profileToSocketMap[id];
+
+      if (onlineSocket) {
+        return [...prev, onlineSocket];
+      }
+
+      return prev;
+    }, []);
+
+    this.server.to(usersSockets).emit(ClientEvents.sendMessageToClient, savedMsg);
+  }
+
+  @SubscribeMessage(ServerEvents.setIsOnline)
+  async setIsOnline(socket: Socket, setIsOnlineDto: SetIsOnlineDto): Promise<void> {
+    const { profileId } = setIsOnlineDto;
+    this.onlineService.setOnline(socket.id, profileId);
+    console.log(this.onlineService.getAllLists());
   }
 }
