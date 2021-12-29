@@ -16,7 +16,7 @@ export class ProfileService {
     private fileSystemService: FileSystem
   ) {}
 
-  async getProfile(id: number): Promise<Profile | undefined> {
+  async getProfile(id: number): Promise<Profile> {
     const profile = await this.profileRepository.findOneOrFail(id, { relations: ['chats'] });
 
     return profile;
@@ -32,7 +32,9 @@ export class ProfileService {
     const prevAvatar = profile.avatarUrl;
 
     if (prevAvatar) {
-      this.fileSystemService.removeFileIfExists(join(__dirname, '../../../public/avatars', prevAvatar));
+      this.fileSystemService.removeFileIfExists(
+        join(__dirname, '../../../public/avatars', prevAvatar)
+      );
     }
 
     profile.avatarUrl = avatarPath;
@@ -40,7 +42,10 @@ export class ProfileService {
     return await this.profileRepository.save(profile);
   }
 
-  async getProfiles(getProfilesQuery: GetProfileQuery, options?: { exceptIds: number[] }): Promise<Profile[]> {
+  async getProfiles(
+    getProfilesQuery: GetProfileQuery,
+    options?: { exceptIds: number[] }
+  ): Promise<Profile[]> {
     const params: GetProfileByQueryParams = {
       name: getProfilesQuery.name,
       ignoredIds: options?.exceptIds,
