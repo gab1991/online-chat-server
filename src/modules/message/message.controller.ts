@@ -1,11 +1,12 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Serialize } from 'decorators';
 
-import { ChatMessagesMap } from './types';
-
+import { MessageDto } from './dto/message.dto';
 import { AuthenticatedUser } from 'modules/auth/decorators';
 import { JwtAuthGuard } from 'modules/auth/passport/jwt.guard';
 import { User } from 'modules/user/user.entity';
 
+import { Message } from './message.entity';
 import { MessageService } from './message.service';
 
 @Controller('messages')
@@ -14,11 +15,11 @@ export class MessageController {
 
   @Get('/searchMessagesInProfileChats')
   @UseGuards(JwtAuthGuard)
+  @Serialize(MessageDto)
   async getMessages(
     @Query() { search }: { search: string },
     @AuthenticatedUser() user: User
-  ): Promise<ChatMessagesMap> {
-    console.log(search);
+  ): Promise<Message[]> {
     return this.messageService.findMessageForProfile(user.profile.id, search);
   }
 }
