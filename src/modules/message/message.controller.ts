@@ -17,9 +17,9 @@ export class MessageController {
   @UseGuards(JwtAuthGuard)
   @Serialize(MessageDto)
   async getMessages(
-    @Query() { search }: { search: string },
+    @Query() { search, chatId }: { search: string; chatId?: string },
     @AuthenticatedUser() user: User
   ): Promise<Message[]> {
-    return this.messageService.findMessageForProfile(user.profile.id, search);
+    return this.messageService.findMessageForProfile(user.profile.id, search, chatId);
   }
 }

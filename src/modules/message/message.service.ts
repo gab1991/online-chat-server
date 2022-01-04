@@ -37,9 +37,18 @@ export class MessageService {
     return this.messageReoisitory.searchMessagesInChats(chatIds, searchStr);
   }
 
-  async findMessageForProfile(profileId: number, searchStr: string): Promise<Message[]> {
+  async findMessageForProfile(
+    profileId: number,
+    searchStr: string,
+    specificChatId?: string
+  ): Promise<Message[]> {
     const { chats } = await this.profileService.getProfile(profileId);
-    const chatIds = chats.map((chat) => chat.id);
+    let chatIds = chats.map((chat) => chat.id);
+    const specificChatIdNumber = Number(specificChatId);
+
+    if (specificChatIdNumber) {
+      chatIds = chatIds.filter((chatId) => chatId === specificChatIdNumber);
+    }
 
     return await this.findMessages(chatIds, searchStr);
   }
