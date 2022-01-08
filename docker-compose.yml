@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  meteora-postgres:
+    image: postgres:14-alpine
+    restart: always
+    env_file:
+      - .dev.env
+    environment:
+      POSTGRES_USER: $DB_USERNAME
+      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_DB: $DB_NAME
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./database-data:/var/lib/postgresql/data/
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'default@rt.ru'
+      PGADMIN_DEFAULT_PASSWORD: 'default'
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - '5050:5050'

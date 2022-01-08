@@ -1,0 +1,17 @@
+version: '3.8'
+
+networks:
+  default:
+    external: true
+    name: meteora-network
+
+
+services:
+ web: 
+    build: .
+    depends_on:
+      - meteora-postgres
+    environment:
+      DB_HOST: meteora-postgres
+    ports:
+      - '8000:8000'
