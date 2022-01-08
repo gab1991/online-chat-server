@@ -6,12 +6,16 @@ import { Strategy } from 'passport-jwt';
 
 import { JsonJwtDecoded } from './types';
 
-import { User } from 'modules/user/user.entity';
+import { ProfileRepository } from 'modules/profile/profile.repository';
 import { UsersRepository } from 'modules/user/user.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private configService: ConfigService, private usersRepo: UsersRepository) {
+  constructor(
+    private configService: ConfigService,
+    private usersRepo: UsersRepository,
+    private profileRepo: ProfileRepository
+  ) {
     super({
       jwtFromRequest: cookieExtractor,
       ignoreExpiration: false,
@@ -19,8 +23,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(decodedJWT: JsonJwtDecoded): Promise<User | undefined> {
-    return this.usersRepo.findOne({ where: [{ id: decodedJWT._id }], relations: ['profile'] });
+  async validate(decodedJWT: JsonJwtDecoded): Promise<any | undefined> {
+    const profile = await this.profileRepo.findOne({ where: [{ id: decodedJWT._id }] });
+
+    return await this.usersRepo.findOne({
+      where: [{ profile: profile }],
+      relations: ['profile'],
+    });
   }
 }
 
