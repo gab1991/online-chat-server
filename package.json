@@ -5,9 +5,14 @@
   "author": "Igor Kornilov",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": ">=14"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
-    "compose": "docker-compose up -d",
+    "docker:dev": "docker-compose -p meteora_server_dev up  -d --build",
+    "docker:network": "docker network create --driver bridge meteora-network",
+    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml -p meteora_server_prod up  -d --build ",
     "build": "cross-env NODE_ENV=production nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "cross-env NODE_ENV=development nest start",
