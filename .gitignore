@@ -5,6 +5,8 @@
 # compiled output
 /dist
 /node_modules
+# db
+database-data
 
 # Logs
 logs
