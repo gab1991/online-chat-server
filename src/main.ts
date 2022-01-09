@@ -19,6 +19,6 @@ async function bootstrap(): Promise<void> {
   app.useStaticAssets(join(__dirname, '../public/dist'));
   app.use(cookieParser());
 
-  await app.listen(8000);
+  await app.listen(process.env.PORT || 8000);
 }
 bootstrap();
