@@ -10,9 +10,10 @@
   },
   "scripts": {
     "prebuild": "rimraf dist",
-    "docker:dev": "docker-compose -p meteora_server_dev up  -d --build",
+    "docker:db": "docker-compose -p meteora_server_db up  -d --build",
+    "docker:dev": "docker-compose -f docker-compose.yml -f docker-compose.dev.yml -p meteora_server_dev up  -d --build",
     "docker:network": "docker network create --driver bridge meteora-network",
-    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml -p meteora_server_prod up  -d --build ",
+    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml -p meteora_server_prod up  -d --build",
     "build": "cross-env NODE_ENV=production nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "cross-env NODE_ENV=development nest start",

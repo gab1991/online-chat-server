@@ -14,3 +14,13 @@ services:
       - '5432:5432'
     volumes:
       - ./database-data:/var/lib/postgresql/data/
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'default@rt.ru'
+      PGADMIN_DEFAULT_PASSWORD: 'default'
+      PGADMIN_LISTEN_PORT: 5050
+    ports:
+      - '5050:5050'
