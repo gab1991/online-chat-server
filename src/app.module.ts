@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ServeStaticModule } from '@nestjs/serve-static';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { jwtConfig, typeOrmConfig } from 'configs';
 import { isProd } from 'main';
@@ -11,11 +12,15 @@ import {
   ProfileModule,
   UserModule,
 } from 'modules';
+import { join } from 'path';
 
 import { EventsModule } from './modules/events/events.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: [isProd ? '.prod.env' : '.dev.env'],

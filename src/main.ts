@@ -16,7 +16,6 @@ async function bootstrap(): Promise<void> {
   app.setGlobalPrefix('/api');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useStaticAssets(join(__dirname, '../public/avatars'), { index: false, prefix: '/avatars' });
-  app.useStaticAssets(join(__dirname, '../public/dist'));
   app.use(cookieParser());
 
   await app.listen(process.env.PORT || 8000);

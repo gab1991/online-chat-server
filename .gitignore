@@ -1,5 +1,7 @@
 #static dir
 /public
+/client
+
 #env vars
 *.env
 # compiled output
