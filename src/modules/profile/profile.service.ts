@@ -46,6 +46,10 @@ export class ProfileService {
     getProfilesQuery: GetProfileQuery,
     options?: { exceptIds: number[] }
   ): Promise<Profile[]> {
+    if (!getProfilesQuery.name) {
+      return [];
+    }
+
     const params: GetProfileByQueryParams = {
       name: getProfilesQuery.name,
       ignoredIds: options?.exceptIds,
