@@ -42,6 +42,12 @@ export class MessageService {
     searchStr: string,
     specificChatId?: string
   ): Promise<Message[]> {
+    const isEmptySearch = !searchStr.trim();
+
+    if (isEmptySearch) {
+      return [];
+    }
+
     const { chats } = await this.profileService.getProfile(profileId);
     let chatIds = chats.map((chat) => chat.id);
     const specificChatIdNumber = Number(specificChatId);
